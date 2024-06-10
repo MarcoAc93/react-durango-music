@@ -1,8 +1,26 @@
 import React from 'react';
+import { gql, useQuery } from '@apollo/client';
+
 import logo from './logo.svg';
 import './App.css';
 
+const QUERY = gql`
+  query Query {
+  getStudents {
+    code
+    message
+    success
+    students {
+      name
+      lastName
+    }
+  }
+}
+`;
+
 function App() {
+  const results = useQuery(QUERY);
+  console.log(results);
   return (
     <div className="App">
       <header className="App-header">
