@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import App from './App';
 import './index.css';
-// import reportWebVitals from './reportWebVitals';
 
-import RouterProvider from './libs/RouterProvider';
 import ApolloProvider from './libs/ApolloProvider';
 
 const root = ReactDOM.createRoot(
@@ -12,7 +11,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ApolloProvider>
-      <RouterProvider />
+      <App />
     </ApolloProvider>
   </React.StrictMode>
 );

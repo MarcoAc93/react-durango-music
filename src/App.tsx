@@ -1,43 +1,16 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import logo from './logo.svg';
-import './App.css';
+import { Dashboard } from './pages/Dashboard';
+import { Login } from './pages/Login';
 
-const QUERY = gql`
-  query Query {
-  getStudents {
-    code
-    message
-    success
-    students {
-      name
-      lastName
-    }
-  }
-}
-`;
-
-function App() {
-  const results = useQuery(QUERY);
-  console.log(results);
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Holi!
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter basename='/app'>
+      <Routes>
+        <Route path='/login' element={<Login />} />
+        <Route path='/' element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
