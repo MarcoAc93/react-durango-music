@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { Link, Outlet } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom';
 import { CircularProgress, styled, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box, Toolbar, IconButton, Typography, useTheme, useMediaQuery } from '@mui/material';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -12,6 +10,8 @@ import StudentsIcon from '@mui/icons-material/Person';
 import GroupsIcon from '@mui/icons-material/Groups';
 import CoursesIcon from '@mui/icons-material/GridView';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+
+import { AppBar, LinkItem, Main } from './styles';
 
 import { AUTHORIZATION } from "../../queries";
 
@@ -38,53 +38,6 @@ const MenuArray = [
     url: '/dashboard/pagos'
   }
 ]
-
-const Main = styled('main', { shouldForwardProp: (prop) => (prop !== 'open' && prop !== 'drawerWidth') })<{
-  open?: boolean;
-  drawerWidth?: number;
-}>(({ theme, open, drawerWidth }) => ({
-  flex: 1,
-  padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  marginLeft: `-${drawerWidth}px`,
-  ...(open && {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: 0,
-  }),
-}));
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-  drawerWidth?: number;
-}
-
-const LinkItem = styled(Link)({
-  textDecoration: 'none',
-  color: 'black',
-});
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open' && prop !== 'drawerWidth',
-})<AppBarProps>(({ theme, open, drawerWidth }) => ({
-  transition: theme.transitions.create(['margin', 'width'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
