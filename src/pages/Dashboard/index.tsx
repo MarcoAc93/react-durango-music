@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Outlet } from 'react-router-dom';
 import { useQuery } from "@apollo/client";
 import { useNavigate } from 'react-router-dom';
-import { CircularProgress, styled, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box, Toolbar, IconButton, Typography, useTheme } from '@mui/material';
+import { CircularProgress, styled, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box, Toolbar, IconButton, Typography, useTheme, useMediaQuery } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 import MenuIcon from '@mui/icons-material/Menu';
@@ -39,9 +39,10 @@ const MenuArray = [
   }
 ]
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+const Main = styled('main', { shouldForwardProp: (prop) => (prop !== 'open' && prop !== 'drawerWidth') })<{
   open?: boolean;
-}>(({ theme, open }) => ({
+  drawerWidth?: number;
+}>(({ theme, open, drawerWidth }) => ({
   flex: 1,
   padding: theme.spacing(3),
   transition: theme.transitions.create('margin', {
@@ -60,11 +61,17 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
+  drawerWidth?: number;
 }
 
+const LinkItem = styled(Link)({
+  textDecoration: 'none',
+  color: 'black',
+});
+
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme, open }) => ({
+  shouldForwardProp: (prop) => prop !== 'open' && prop !== 'drawerWidth',
+})<AppBarProps>(({ theme, open, drawerWidth }) => ({
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -92,6 +99,8 @@ const Dashboard = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const navigation = useNavigate();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const newDrawerWidth = isDesktop ? drawerWidth * 2 : drawerWidth;
 
   const handleDrawerOpen = () => setOpen(true);
 
@@ -111,14 +120,14 @@ const Dashboard = () => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open || isDesktop} drawerWidth={newDrawerWidth}>
         <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
             edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+            sx={{ mr: 2, ...((open || isDesktop) && { display: 'none' }) }}
           >
             <MenuIcon />
           </IconButton>
@@ -129,16 +138,16 @@ const Dashboard = () => {
       </AppBar>
         <Drawer
           sx={{
-            width: drawerWidth,
+            width: newDrawerWidth,
             flexShrink: 0,
             '& .MuiDrawer-paper': {
-              width: drawerWidth,
+              width: newDrawerWidth,
               boxSizing: 'border-box',
             },
           }}
           variant="persistent"
           anchor="left"
-          open={open}
+          open={open || isDesktop}
         >
           <DrawerHeader>
             <IconButton onClick={handleDrawerClose}>
@@ -146,21 +155,21 @@ const Dashboard = () => {
             </IconButton>
           </DrawerHeader>
           <List>
-            {MenuArray.map((element, index) => (
+            {MenuArray.map((element) => (
               <ListItem key={element.text} disablePadding>
                 <ListItemButton>
                   <ListItemIcon sx={{ minWidth: 45 }}>
                     {element.Component}
                   </ListItemIcon>
-                  <Link to={element.url}>
+                  <LinkItem to={element.url}>
                     <ListItemText primary={element.text} />
-                  </Link>
+                  </LinkItem>
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
         </Drawer>
-        <Main open={open}>
+        <Main open={open || isDesktop} drawerWidth={newDrawerWidth}>
           <Outlet />
         </Main>
     </Box>
