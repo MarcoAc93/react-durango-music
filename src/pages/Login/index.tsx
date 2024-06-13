@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Button, styled, TextField } from '@mui/material';
+import { Button, styled, TextField, CircularProgress } from '@mui/material';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 
 import { AUTH_USER, AUTHORIZATION } from '../../queries';
 
-const Root = styled('div')(({ theme }) => ({
+const Root = styled('div')(({
   display: 'flex',
   flex: 1,
   justifyContent: 'center',
@@ -15,18 +15,18 @@ const Root = styled('div')(({ theme }) => ({
   maxWidth: 768
 }));
 
-const ContentContainer = styled('div')(({ theme }) => ({
+const ContentContainer = styled('div')(({
   textAlign: 'center'
 }));
   
-const FormContainer = styled('div')(({ theme }) => ({
+const FormContainer = styled('div')(({
   display: 'flex',
   flexDirection: 'column',
   gap: 8,
   width: '75%'
 }));
 
-export const Login = () => {
+const Login = () => {
   const [authUser] = useLazyQuery(AUTH_USER);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,9 +34,9 @@ export const Login = () => {
   const token = localStorage.getItem('token');
 
   const { loading } = useQuery(AUTHORIZATION, {
-    variables: { token },
+    variables: { token: token ?? '' },
     onCompleted(data) {
-      if (data.authorization.id) navigate('/')
+      if (data.authorization?.id) navigate('/dashboard');
     },
   });
 
@@ -51,7 +51,7 @@ export const Login = () => {
       onCompleted: (data) => {
         const { authUser } = data;
         localStorage.setItem('token', authUser.token);
-        navigate('/');
+        navigate('/dashboard');
       },
       onError(error) {
         console.log(error)
@@ -59,7 +59,7 @@ export const Login = () => {
     })
   };
 
-  if (loading) return null;
+  if (loading) return <CircularProgress />;
 
   return (
     <Root>
@@ -75,3 +75,5 @@ export const Login = () => {
     </Root>
   );
 };
+
+export default Login;
