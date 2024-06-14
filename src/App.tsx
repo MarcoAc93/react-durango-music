@@ -1,8 +1,9 @@
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
 
-import Dashboard from "./components/Dashboard";
+import { Dashboard } from "./components";
 import Login from "./pages/Login";
 import Students from './pages/Students';
+import NewStudent from './pages/NewStudent';
 import Groups from './pages/Groups';
 import Courses from './pages/Courses';
 import Payments from './pages/Payments';
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/*" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard  />}>
           <Route path='' element={<Students />} />
+          <Route path='/dashboard/nuevo-alumno' element={<NewStudent />} />
           <Route path='grupos' element={<Groups />} />
           <Route path='cursos' element={<Courses />} />
           <Route path='pagos' element={<Payments />} />

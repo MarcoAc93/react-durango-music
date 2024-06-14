@@ -7,7 +7,12 @@ export const Container = styled('div')({
 });
 
 export const Title = styled('h2')(({ theme }) => ({
-  fontSize: theme.typography.pxToRem(34),
+  fontSize: theme.typography.pxToRem(30),
   fontWeight: 700,
   margin: 0
 }));
+
+export const ControlContainer = styled('div')({
+  display: 'flex',
+  gap: 8
+});

@@ -34,7 +34,7 @@ export const MainContent = styled('main', { shouldForwardProp: (prop) => prop !=
   open?: boolean;
 }>(({ open }) => ({
   flexGrow: 1,
-  padding: 16,
+  padding: '0px 16px',
   marginTop: 16,
   marginLeft: open ? `${drawerWidth}px` : '0',
   transition: 'margin-left 0.3s ease',

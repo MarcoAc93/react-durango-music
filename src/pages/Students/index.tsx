@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react'
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useQuery } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 
-import PageLoader from '../../components/Loader';
-import Error from '../../components/Error';
+import { PageLoader, Error, Title } from '../../components';
 import { GET_STUDENTS } from '../../queries';
-import { Container, Title } from './styles';
+import { Container, ControlContainer } from './styles';
 
 const Students = () => {
   const { loading, data, error } = useQuery(GET_STUDENTS);
+  const navigate = useNavigate()
 
   const columns = useMemo(() => {
     const columnsData: GridColDef[] = [
@@ -32,13 +34,22 @@ const Students = () => {
     return columnsData
   }, []);
 
+  const handleAdd = () => {
+    navigate('/dashboard/nuevo-alumno');
+  }
+
   if (loading) return <PageLoader />
 
-  if (true) return <Error title="Ups, also salio mal" description='Hubo un error en el servidor, lo sentimos :(' />
+  if (error) return <Error title="Ups, also salio mal" description='Hubo un error en el servidor, lo sentimos :(' />
 
   return (
     <Container>
       <Title>Alumnos</Title>
+      <ControlContainer>
+        <Button variant='contained' onClick={handleAdd}>Agregar</Button>
+        <Button variant='contained' color='warning'>Editar</Button>
+        <Button variant='contained' color='secondary'>Eliminar</Button>
+      </ControlContainer>
       <DataGrid
         rows={data.getStudents.students}
         columns={columns}
