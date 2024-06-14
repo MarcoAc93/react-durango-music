@@ -34,7 +34,7 @@ const Students = () => {
 
   if (loading) return <PageLoader />
 
-  if (error) return <Error title="Ups, also salio mal" description='Hubo un error en el servidor, lo sentimos :(' />
+  if (true) return <Error title="Ups, also salio mal" description='Hubo un error en el servidor, lo sentimos :(' />
 
   return (
     <Container>
