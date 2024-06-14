@@ -8,6 +8,11 @@ export const ContainerPage = styled('div')({
   marginBottom: 16
 });
 
+export const HeaderWrapper = styled('div')({
+  display: 'flex',
+  alignItems: 'center'
+});
+
 export const InputWrapperColumn = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',

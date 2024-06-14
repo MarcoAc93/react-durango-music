@@ -33,7 +33,7 @@ const MenuArray = [
 
 const DrawerContainer = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
-}>(({ open }) => ({
+}>(({ open, theme }) => ({
   position: 'fixed',
   top: 0,
   left: open ? 0 : `-${drawerWidth}px`,
@@ -43,6 +43,10 @@ const DrawerContainer = styled('div', { shouldForwardProp: (prop) => prop !== 'o
   boxShadow: '2px 0 5px rgba(0, 0, 0, 0.5)',
   transition: 'left 0.3s ease',
   zIndex: 1000,
+  [theme.breakpoints.up('md')]: {
+    left: open ? 0 : `-${drawerWidth * 2}px`,
+    width: drawerWidth * 2,
+  }
 }));
 
 const DrawerContent = styled('div')({

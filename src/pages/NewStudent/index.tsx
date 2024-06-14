@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, ButtonGroup } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { Title } from '../../components';
-import { ContainerPage, InputWrapperColumn, InputWrapperRow, ButtonGroupContainer, ButtonContainer } from './styles';
+import { ContainerPage, InputWrapperColumn, InputWrapperRow, ButtonGroupContainer, ButtonContainer, HeaderWrapper } from './styles';
 
 const COURSES = [
   'Guitarra',
@@ -29,7 +30,10 @@ const NewStudent = () => {
 
   return (
     <ContainerPage>
-      <Title variant='h2' noWrap>Agregar Nuevo Alumno</Title>
+      <HeaderWrapper>
+        <ChevronLeftIcon fontSize='large' />
+        <Title variant='h2' noWrap>Agregar Nuevo Alumno</Title>
+      </HeaderWrapper>
 
       <div>
         <Typography variant='h5'>Informacion del alumno</Typography>
