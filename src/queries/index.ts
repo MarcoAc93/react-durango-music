@@ -18,3 +18,51 @@ export const AUTHORIZATION = gql`
     }
   }
 `;
+
+export const GET_STUDENTS = gql`
+  query GetStudents {
+    getStudents {
+      code
+      message
+      success
+      students {
+        age
+        cellphone
+        email
+        deregister {
+          comment
+          date
+        }
+        enrollment {
+          amount
+          id
+          payed
+          period
+          scholarship
+          studentId
+          courses {
+            days {
+              friday
+              monday
+              saturday
+              sunday
+              thursday
+              tuesday
+              wednesday
+            }
+            name
+            profesor
+            time
+          }
+        }
+        id
+        lastName
+        name
+        tutor {
+          contactNumber
+          name
+        }
+      }
+    }
+  }
+`
