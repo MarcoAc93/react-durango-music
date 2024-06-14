@@ -57,7 +57,7 @@ const ListStyled = styled('ul')({
 });
 
 
-const CustomDrawer = ({ open, onClose }: { open?: boolean; onClose: () => void }) => {
+const CustomDrawer = ({ open }: { open?: boolean }) => {
   return (
     <DrawerContainer open={open}>
       <DrawerContent>
