@@ -11,10 +11,10 @@ export const DashboardContainer = styled('div')({
 export const Header = styled('header', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
   drawerWidth?: number;
-}>(({ open }) => ({
+}>(({ open, theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: '#1976d2',
+  backgroundColor: theme.palette.primary.main,
   color: 'white',
   paddingLeft: open ? drawerWidth + 10 : 16,
   transition: 'padding-left 0.3s ease',
@@ -44,4 +44,4 @@ export const MainContent = styled('main', { shouldForwardProp: (prop) => prop !=
 export const Title = styled(Typography)({
   fontSize: 24,
   fontWeight: 500
-})
+});
