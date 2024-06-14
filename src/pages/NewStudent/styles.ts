@@ -24,9 +24,9 @@ export const InputWrapperColumn = styled('div')(({ theme }) => ({
 
 export const InputWrapperRow = styled('div')({
   display: 'flex',
-  justifyContent: 'space-between',
   alignItems: 'center',
-  gap: 16
+  gap: 16,
+  flexWrap: 'wrap',
 });
 
 export const ButtonGroupContainer = styled('div')({
@@ -36,5 +36,11 @@ export const ButtonGroupContainer = styled('div')({
 export const ButtonContainer = styled('div')({
   display: 'flex',
   gap: 16
+});
+
+export const InputWrapper = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 4
 });
 
