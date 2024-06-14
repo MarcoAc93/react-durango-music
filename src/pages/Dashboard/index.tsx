@@ -1,63 +1,72 @@
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
 import { useNavigate, Outlet } from 'react-router-dom';
-import { CircularProgress, styled, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Box, Toolbar, IconButton, Typography, useTheme, useMediaQuery } from '@mui/material';
-
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import StudentsIcon from '@mui/icons-material/Person';
-import GroupsIcon from '@mui/icons-material/Groups';
-import CoursesIcon from '@mui/icons-material/GridView';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-
-import { AppBar, LinkItem, Main } from './styles';
+import { CircularProgress, styled, useMediaQuery, useTheme, Typography } from '@mui/material';
 
 import { AUTHORIZATION } from "../../queries";
+import CustomDrawer from "./Drawer";
 
 const drawerWidth = 150;
-const MenuArray = [
-  {
-    text: 'Alumnos',
-    Component: <StudentsIcon />,
-    url: ''
-  },
-  {
-    text: 'Grupos',
-    Component: <GroupsIcon />,
-    url: '/dashboard/grupos'
-  },
-  {
-    text: 'Cursos',
-    Component: <CoursesIcon />,
-    url: '/dashboard/cursos'
-  },
-  {
-    text: 'Pagos',
-    Component: <AttachMoneyIcon />,
-    url: '/dashboard/pagos'
-  }
-]
 
-const DrawerHeader = styled('div')(({ theme }) => ({
+const DashboardContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+  width: '100%',
+});
+
+const Header = styled('header', { shouldForwardProp: (prop) => prop !== 'open' })<{
+  open?: boolean;
+  drawerWidth?: number;
+}>(({ open }) => ({
   display: 'flex',
   alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
+  backgroundColor: '#1976d2',
+  color: 'white',
+  paddingLeft: open ? drawerWidth + 10 : 16,
+  transition: 'padding-left 0.3s ease',
+  height: '64px',
+  boxSizing: 'border-box',
 }));
+
+const MenuButton = styled('button')({
+  background: 'none',
+  border: 'none',
+  color: 'white',
+  fontSize: '24px',
+  cursor: 'pointer',
+});
+
+const MainContent = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+  open?: boolean;
+}>(({ open }) => ({
+  flexGrow: 1,
+  padding: 16,
+  marginTop: 16,
+  marginLeft: open ? `${drawerWidth}px` : '0',
+  transition: 'margin-left 0.3s ease',
+  boxSizing: 'border-box',
+}));
+
+const Title = styled(Typography)({
+  fontSize: 24,
+  fontWeight: 500
+})
 
 const Dashboard = () => {
   const token = localStorage.getItem('token');
-  const theme = useTheme();
-  const [open, setOpen] = useState(false);
   const navigation = useNavigate();
+  const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const newDrawerWidth = isDesktop ? drawerWidth * 2 : drawerWidth;
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleDrawerOpen = () => setOpen(true);
+  const handleToggleDrawer = () => {
+    setDrawerOpen(prevState => !prevState);
+  };
 
-  const handleDrawerClose = () => setOpen(false);
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
+  };
 
   const { loading } = useQuery(AUTHORIZATION, {
     variables: { token },
@@ -72,60 +81,16 @@ const Dashboard = () => {
   if (loading) return <CircularProgress  />
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" open={open || isDesktop} drawerWidth={newDrawerWidth}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{ mr: 2, ...((open || isDesktop) && { display: 'none' }) }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h4" noWrap component="div">
-            Durango Music
-          </Typography>
-        </Toolbar>
-      </AppBar>
-        <Drawer
-          sx={{
-            width: newDrawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: newDrawerWidth,
-              boxSizing: 'border-box',
-            },
-          }}
-          variant="persistent"
-          anchor="left"
-          open={open || isDesktop}
-        >
-          <DrawerHeader>
-            <IconButton onClick={handleDrawerClose}>
-              {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-            </IconButton>
-          </DrawerHeader>
-          <List>
-            {MenuArray.map((element) => (
-              <ListItem key={element.text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon sx={{ minWidth: 45 }}>
-                    {element.Component}
-                  </ListItemIcon>
-                  <LinkItem to={element.url}>
-                    <ListItemText primary={element.text} />
-                  </LinkItem>
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
-        <Main open={open || isDesktop} drawerWidth={newDrawerWidth}>
-          <Outlet />
-        </Main>
-    </Box>
+    <DashboardContainer>
+      <Header open={drawerOpen || isDesktop}>
+        <MenuButton onClick={handleToggleDrawer}>☰</MenuButton>
+        <Title noWrap variant="h1">Durango Music</Title>
+      </Header>
+      <CustomDrawer open={drawerOpen || isDesktop} onClose={handleDrawerClose} />
+      <MainContent open={drawerOpen || isDesktop}>
+        <Outlet />
+      </MainContent>
+    </DashboardContainer>
   );
 }
 
