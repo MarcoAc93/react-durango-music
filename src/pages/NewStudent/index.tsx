@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, ButtonGroup, InputLabel, SelectChangeEvent } from '@mui/material';
+import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, ButtonGroup, InputLabel, SelectChangeEvent, Chip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { Title } from '../../components';
-import { ContainerPage, InputWrapperColumn, InputWrapperRow, ButtonGroupContainer, ButtonContainer, HeaderWrapper, InputWrapper } from './styles';
+import { ChipContainer, ContainerPage, InputWrapperColumn, InputWrapperRow, ButtonContainer, HeaderWrapper, InputWrapper } from './styles';
 
 const COURSES = [
   'Guitarra',
@@ -39,6 +39,24 @@ const DAYS = [
   { value: 'saturday', display: 'S' },
 ]
 
+const daysToSpanish = {
+  monday: 'Lunes',
+  tuesday: 'Martes',
+  wednesday: 'Miercoles',
+  thursday: 'Jueves',
+  friday: 'Viernes',
+  saturday: 'Sabado'
+}
+
+const OBJECT_DAYS = {
+  monday: false,
+  tuesday: false,
+  wednesday: false,
+  thursday: false,
+  friday: false,
+  saturday: false
+};
+
 type Student = {
   name: string;
   lastName: string;
@@ -54,21 +72,11 @@ enum Time {
   EIGHT_TO_NINE = '8pm - 9pm'
 }
 
-type DaysOfWeekInput = {
-  monday: boolean;
-  tuesday: boolean;
-  wednesday: boolean;
-  thursday: boolean;
-  friday: boolean;
-  saturday: boolean;
-  sunday: boolean;
-};
-
 type Course = {
   name: string;
   profesor: string;
   time: Time
-  days: DaysOfWeekInput
+  days: string[];
 }
 
 type Tutor = {
@@ -81,14 +89,15 @@ const NewStudent = () => {
 
   const [course, setCourse] = useState('');
   const [profesor, setProfesor] = useState('');
-  const [time, setTime] = useState('');
+  const [time, setTime] = useState<Time>(Time.FIVE_TO_SIX);
   const [studentInfo, setStudentInfo] = useState<Student>({ name: '', lastName: '', email: '', cellphone: '', age: '' });
   const [tutorInfo, setTutorInfo] = useState<Tutor>({ name: '', contactNumber: '' });
   const [days, setDays] = useState<string[]>([]);
+  const [courseInfo, setCourseInfo] = useState<Course[]>([]);
 
   const handleCourse = (event: SelectChangeEvent<string>) => setCourse(event.target.value);
   const handleProfesor = (event: SelectChangeEvent<string>) => setProfesor(event.target.value);
-  const handleTime = (event: SelectChangeEvent<string>) => setTime(event.target.value);
+  const handleTime = (event: SelectChangeEvent<Time>) => setTime(event.target.value as Time);
   const handleGoBack = () => navigate('/dashboard');
 
   const handleStudentInput = (event: React.ChangeEvent<HTMLInputElement>) => setStudentInfo(prevState => ({
@@ -109,12 +118,43 @@ const NewStudent = () => {
     setDays([...days, day]);
   };
 
-  const handleSubmit = () => {
-    console.log({ studentInfo, tutorInfo });
+  const generateDaysObject = (daysArray: string[]) => {
+    // @ts-ignore
+    daysArray.forEach(day => { if (OBJECT_DAYS[day]) { OBJECT_DAYS[day] = true; } });
+    return days;
+  }
+
+  const generateCourseString = (courseInfo: Course) => {
+    // @ts-ignore
+    return `Curso de ${courseInfo.name} con ${courseInfo.profesor} a las ${courseInfo.time} los dias ${courseInfo.days.map(el => daysToSpanish[el]).join(', ')}`
+  };
+
+  const handleAddCourse = () => {
+    const daysObject = generateDaysObject(days);
+    const courseObject: Course = { name: course, profesor, time, days: daysObject };
+    setCourseInfo(prevState => [...prevState, courseObject]);
+    setCourse('');
+    setProfesor('');
+    setTime('' as Time);
+    setDays([]);
+  };
+
+  const removeCourse = (index: number) => {
+    if (index > -1) {
+      setCourseInfo(currentState => {
+        const newState = currentState.filter((_el, idx) => idx !== index);
+        return newState;
+      });
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log({ studentInfo, tutorInfo, courseInfo });
   }
 
   return (
-    <ContainerPage>
+    <ContainerPage onSubmit={handleSubmit}>
       <HeaderWrapper>
         <ChevronLeftIcon fontSize='large' onClick={handleGoBack} />
         <Title variant='h2' noWrap>Agregar Nuevo Alumno</Title>
@@ -169,7 +209,13 @@ const NewStudent = () => {
           
           <InputWrapper>
             <Typography variant='body1'>Edad</Typography>
-            <TextField label='Edad del alumno' fullWidth />
+            <TextField
+              label='Edad del alumno'
+              fullWidth
+              name='age'
+              onChange={handleStudentInput}
+              value={studentInfo.age}
+            />
           </InputWrapper>
         </InputWrapperColumn>
       </div>
@@ -177,7 +223,7 @@ const NewStudent = () => {
       <Divider sx={{ margin: '16px 0px' }} />
 
       <div>
-        <Typography variant='h5' sx={{ marginBottom: 1}}>Curso</Typography>
+        <Typography variant='h5' sx={{ marginBottom: 1 }}>Curso</Typography>
         <InputWrapperRow>
           <FormControl sx={{ minWidth: 120 }}>
             <InputLabel id="course">Curso</InputLabel>
@@ -230,12 +276,6 @@ const NewStudent = () => {
             </Select>
           </FormControl>
 
-          <Button variant='contained' size='large'>
-            <AddBoxRoundedIcon fontSize='large' />
-          </Button>
-        </InputWrapperRow>
-
-        <ButtonGroupContainer>
           <ButtonGroup size='large'>
             {DAYS.map(element => (
               <Button
@@ -247,7 +287,17 @@ const NewStudent = () => {
               </Button>
             ))}
           </ButtonGroup>
-        </ButtonGroupContainer>
+
+          <Button variant='contained' size='large' onClick={handleAddCourse}>
+            <AddBoxRoundedIcon fontSize='large' />
+          </Button>
+        </InputWrapperRow>
+
+        <ChipContainer sx={{ '& .MuiChip-root': { alignSelf: 'flex-start'} }}>
+          {courseInfo.map((course, idx) => (
+            <Chip key={`${course.name}-${idx}`} variant='outlined' label={generateCourseString(course)} onDelete={() => removeCourse(idx)} />
+          ))}
+        </ChipContainer>
       </div>
 
       <Divider sx={{ margin: '16px 0px' }} />
@@ -283,7 +333,7 @@ const NewStudent = () => {
 
       <ButtonContainer>
         <Button variant='contained' color='error'>Cancelar</Button>
-        <Button variant='contained' color='primary' onClick={handleSubmit}>Guardar</Button>
+        <Button variant='contained' color='primary' type='submit'>Guardar</Button>
       </ButtonContainer>
 
     </ContainerPage>

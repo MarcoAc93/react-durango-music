@@ -1,6 +1,6 @@
 import { styled } from "@mui/material";
 
-export const ContainerPage = styled('div')({
+export const ContainerPage = styled('form')({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
@@ -44,3 +44,9 @@ export const InputWrapper = styled('div')({
   gap: 4
 });
 
+export const ChipContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  marginTop: 8,
+  gap: 8
+});
