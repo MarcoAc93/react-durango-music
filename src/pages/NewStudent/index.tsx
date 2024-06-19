@@ -9,7 +9,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Title } from '../../components';
 import { ChipContainer, ContainerPage, InputWrapperColumn, InputWrapperRow, ButtonContainer, HeaderWrapper, InputWrapper } from './styles';
 import { Course, FormValues } from './types'
-import { COURSES, DAYS, PROFESORS, TIMES } from './constants';
+import { COURSES, DAYS, PROFESORS, TIMES, daysToSpanish } from './constants';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Nombre del alumno requerido'),
@@ -25,7 +25,7 @@ const validationSchema = Yup.object().shape({
       profesor: Yup.string().required('Selecciona el profesor'),
       time: Yup.string().required('Selecciona la hora'),
       days: Yup.array().min(1).required('Selecciona al menos 1 dia')
-    }),
+    }).required(),
   ),
 });
 
