@@ -1,342 +1,295 @@
-import { useState } from 'react';
-import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, ButtonGroup, InputLabel, SelectChangeEvent, Chip } from '@mui/material';
+import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, ButtonGroup, InputLabel, Chip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
+import { FieldArray, Formik, Form, ErrorMessage } from 'formik';
 
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { Title } from '../../components';
 import { ChipContainer, ContainerPage, InputWrapperColumn, InputWrapperRow, ButtonContainer, HeaderWrapper, InputWrapper } from './styles';
+import { Course, FormValues } from './types'
+import { COURSES, DAYS, PROFESORS, TIMES } from './constants';
 
-const COURSES = [
-  'Guitarra',
-  'Canto',
-  'Teclado',
-  'Violin'
-];
-
-const PROFESORS = [
-  'Eliut',
-  'Alicia',
-  'Jose',
-  'Enrique',
-  'Gustavo'
-];
-
-const TIMES = [
-  '5pm - 6pm',
-  '6pm - 7pm',
-  '7pm - 8pm',
-  '8pm - 9pm',
-]
-
-const DAYS = [
-  { value: 'monday', display: 'L' },
-  { value: 'tuesday', display: 'M' },
-  { value: 'wednesday', display: 'M' },
-  { value: 'thursday', display: 'J' },
-  { value: 'friday', display: 'V' },
-  { value: 'saturday', display: 'S' },
-]
-
-const daysToSpanish = {
-  monday: 'Lunes',
-  tuesday: 'Martes',
-  wednesday: 'Miercoles',
-  thursday: 'Jueves',
-  friday: 'Viernes',
-  saturday: 'Sabado'
-}
-
-const OBJECT_DAYS = {
-  monday: false,
-  tuesday: false,
-  wednesday: false,
-  thursday: false,
-  friday: false,
-  saturday: false
-};
-
-type Student = {
-  name: string;
-  lastName: string;
-  email: string;
-  cellphone: string;
-  age: string;
-}
-
-enum Time {
-  FIVE_TO_SIX = '5pm - 6pm',
-  SIX_TO_SEVEN = '6pm - 7pm',
-  SEVEN_TO_EIGHT = '7pm - 8pm',
-  EIGHT_TO_NINE = '8pm - 9pm'
-}
-
-type Course = {
-  name: string;
-  profesor: string;
-  time: Time
-  days: string[];
-}
-
-type Tutor = {
-  name: string;
-  contactNumber: string;
-}
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required('Nombre del alumno requerido'),
+  lastName: Yup.string().required('Apellido del alumno requerido'),
+  email: Yup.string().email('Email invalido'),
+  cellphone: Yup.string().required('El numero es requerido'),
+  age: Yup.string(),
+  tutorName: Yup.string(),
+  tutorContactNumber: Yup.string(),
+  courses: Yup.array().of(
+    Yup.object().shape({
+      name: Yup.string().required('Selecciona el curso'),
+      profesor: Yup.string().required('Selecciona el profesor'),
+      time: Yup.string().required('Selecciona la hora'),
+      days: Yup.array().min(1).required('Selecciona al menos 1 dia')
+    }),
+  ),
+});
 
 const NewStudent = () => {
   const navigate = useNavigate();
-
-  const [course, setCourse] = useState('');
-  const [profesor, setProfesor] = useState('');
-  const [time, setTime] = useState<Time>(Time.FIVE_TO_SIX);
-  const [studentInfo, setStudentInfo] = useState<Student>({ name: '', lastName: '', email: '', cellphone: '', age: '' });
-  const [tutorInfo, setTutorInfo] = useState<Tutor>({ name: '', contactNumber: '' });
-  const [days, setDays] = useState<string[]>([]);
-  const [courseInfo, setCourseInfo] = useState<Course[]>([]);
-
-  const handleCourse = (event: SelectChangeEvent<string>) => setCourse(event.target.value);
-  const handleProfesor = (event: SelectChangeEvent<string>) => setProfesor(event.target.value);
-  const handleTime = (event: SelectChangeEvent<Time>) => setTime(event.target.value as Time);
-  const handleGoBack = () => navigate('/dashboard');
-
-  const handleStudentInput = (event: React.ChangeEvent<HTMLInputElement>) => setStudentInfo(prevState => ({
-    ...prevState,
-    [event.target.name]: event.target.value
-  }));
-
-  const handleTutorInput = (event: React.ChangeEvent<HTMLInputElement>) => setTutorInfo(prevState => ({
-    ...prevState,
-    [event.target.name]: event.target.value
-  }));
-
-  const handleDays = (day: string) => {
-    if (days.includes(day)) {
-      setDays(days.filter(item => item !== day));
-      return;
-    }
-    setDays([...days, day]);
+  const initialValues: FormValues = {
+    name: '',
+    lastName: '',
+    email: '',
+    cellphone: '',
+    age: '',
+    tutorName: '',
+    tutorContactNumber: '',
+    course: '', // Temp field for adding new course
+    profesor: '', // Temp field for adding new course
+    time: '', // Temp field for adding new course
+    days: [] as string[], // Temp field for adding new course
+    courses: [] as unknown as [Course]
   };
 
-  const generateDaysObject = (daysArray: string[]) => {
-    // @ts-ignore
-    daysArray.forEach(day => { if (OBJECT_DAYS[day]) { OBJECT_DAYS[day] = true; } });
-    return days;
-  }
+  const handleGoBack = () => navigate('/dashboard');
 
   const generateCourseString = (courseInfo: Course) => {
     // @ts-ignore
     return `Curso de ${courseInfo.name} con ${courseInfo.profesor} a las ${courseInfo.time} los dias ${courseInfo.days.map(el => daysToSpanish[el]).join(', ')}`
   };
 
-  const handleAddCourse = () => {
-    const daysObject = generateDaysObject(days);
-    const courseObject: Course = { name: course, profesor, time, days: daysObject };
-    setCourseInfo(prevState => [...prevState, courseObject]);
-    setCourse('');
-    setProfesor('');
-    setTime('' as Time);
-    setDays([]);
-  };
-
-  const removeCourse = (index: number) => {
-    if (index > -1) {
-      setCourseInfo(currentState => {
-        const newState = currentState.filter((_el, idx) => idx !== index);
-        return newState;
+  const addCourse = (values: FormValues, push: any, setFieldValue: any) => {
+    if (values.course && values.profesor && values.time && values.days.length > 0) {
+      push({
+        name: values.course,
+        profesor: values.profesor,
+        time: values.time,
+        days: values.days
       });
+      setFieldValue('course', '');
+      setFieldValue('profesor', '');
+      setFieldValue('time', '');
+      setFieldValue('days', []);
     }
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log({ studentInfo, tutorInfo, courseInfo });
   }
 
+  const onSubmit = (values: FormValues) => {
+    console.log(values);
+  };
+
   return (
-    <ContainerPage onSubmit={handleSubmit}>
-      <HeaderWrapper>
-        <ChevronLeftIcon fontSize='large' onClick={handleGoBack} />
-        <Title variant='h2' noWrap>Agregar Nuevo Alumno</Title>
-      </HeaderWrapper>
+    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
+      {({ values, handleChange, handleBlur, setFieldValue, errors, touched }) => (
+        <ContainerPage>
+          <Form>
+            <HeaderWrapper>
+              <ChevronLeftIcon fontSize='large' onClick={handleGoBack} />
+              <Title variant='h2' noWrap>Agregar Nuevo Alumno</Title>
+            </HeaderWrapper>
 
-      <div>
-        <Typography variant='h5'>Informacion del alumno</Typography>
-        <InputWrapperColumn>
-          <InputWrapper>
-            <Typography variant='body1'>Nombre/s</Typography>
-            <TextField
-              label='Nombre del alumno'
-              fullWidth
-              name='name'
-              onChange={handleStudentInput}
-              value={studentInfo.name}
-            />
-          </InputWrapper>
+            <div>
+              <Typography variant='h5'>Informacion del alumno</Typography>
+              <InputWrapperColumn>
+                <InputWrapper>
+                  <Typography variant='body1'>Nombre/s</Typography>
+                  <TextField
+                    label='Nombre del alumno'
+                    fullWidth
+                    name='name'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.name}
+                  />
+                  {errors.name && touched.name && <Typography variant='body1' color='red'>{errors.name}</Typography>}
+                </InputWrapper>
 
-          <InputWrapper>
-            <Typography variant='body1'>Apellidos</Typography>
-            <TextField
-              label='Apellidos del alumno'
-              fullWidth
-              name='lastName'
-              onChange={handleStudentInput}
-              value={studentInfo.lastName}
-            />
-          </InputWrapper>
+                <InputWrapper>
+                  <Typography variant='body1'>Apellidos</Typography>
+                  <TextField
+                    label='Apellidos del alumno'
+                    fullWidth
+                    name='lastName'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.lastName}
+                  />
+                  {errors.lastName && touched.lastName && <Typography variant='body1' color='red'>{errors.lastName}</Typography>}
+                </InputWrapper>
 
-          <InputWrapper>
-            <Typography variant='body1'>Email</Typography>
-            <TextField
-              label='Email del alumno'
-              fullWidth
-              name='email'
-              onChange={handleStudentInput}
-              value={studentInfo.email}
-            />
-          </InputWrapper>
-          
-          <InputWrapper>
-            <Typography variant='body1'>Telefono</Typography>
-            <TextField
-              label='Telefono de contacto'
-              fullWidth
-              name='cellphone'
-              onChange={handleStudentInput}
-              value={studentInfo.cellphone}
-            />
-          </InputWrapper>
-          
-          <InputWrapper>
-            <Typography variant='body1'>Edad</Typography>
-            <TextField
-              label='Edad del alumno'
-              fullWidth
-              name='age'
-              onChange={handleStudentInput}
-              value={studentInfo.age}
-            />
-          </InputWrapper>
-        </InputWrapperColumn>
-      </div>
+                <InputWrapper>
+                  <Typography variant='body1'>Email</Typography>
+                  <TextField
+                    label='Email del alumno'
+                    fullWidth
+                    name='email'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.email}
+                  />
+                  {errors.email && touched.email && <Typography variant='body1' color='red'>{errors.email}</Typography>}
+                </InputWrapper>
+                
+                <InputWrapper>
+                  <Typography variant='body1'>Telefono</Typography>
+                  <TextField
+                    label='Telefono de contacto'
+                    fullWidth
+                    name='cellphone'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.cellphone}
+                  />
+                  {errors.cellphone && touched.cellphone && <Typography variant='body1' color='red'>{errors.cellphone}</Typography>}
+                </InputWrapper>
+                
+                <InputWrapper>
+                  <Typography variant='body1'>Edad</Typography>
+                  <TextField
+                    label='Edad del alumno'
+                    fullWidth
+                    name='age'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.age}
+                  />
+                </InputWrapper>
+              </InputWrapperColumn>
+            </div>
 
-      <Divider sx={{ margin: '16px 0px' }} />
+            <Divider sx={{ margin: '16px 0px' }} />
 
-      <div>
-        <Typography variant='h5' sx={{ marginBottom: 1 }}>Curso</Typography>
-        <InputWrapperRow>
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="course">Curso</InputLabel>
-            <Select
-              labelId="course"
-              id="course-select-helper"
-              label='Curso'
-              value={course}
-              onChange={handleCourse}
-            >
-              {COURSES.map(element => (
-                <MenuItem value={element} key={element}>
-                  {element}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <div>
+              <Typography variant='h5' sx={{ marginBottom: 1 }}>Curso</Typography>
+              <FieldArray name="courses">
+                  {({ push, remove }) => (
+                    <>
+                      <InputWrapperRow>
+                        <FormControl sx={{ minWidth: 120 }}>
+                          <InputLabel id="course">Curso</InputLabel>
+                          <Select
+                            labelId="course"
+                            id="course-select-helper"
+                            name="course"
+                            value={values.course}
+                            onChange={(event) => setFieldValue('course', event.target.value)}
+                          >
+                            {COURSES.map(element => (
+                              <MenuItem value={element} key={element}>
+                                {element}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
 
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="profesor">Profesor</InputLabel>
-            <Select
-              labelId="profesor"
-              id="profesor-select-helper"
-              label='Profesor'
-              value={profesor}
-              onChange={handleProfesor}
-            >
-              {PROFESORS.map(element => (
-                <MenuItem value={element} key={element}>
-                  {element}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+                        <FormControl sx={{ minWidth: 120 }}>
+                          <InputLabel id="profesor">Profesor</InputLabel>
+                          <Select
+                            labelId="profesor"
+                            id="profesor-select-helper"
+                            name="profesor"
+                            value={values.profesor}
+                            onChange={(event) => setFieldValue('profesor', event.target.value)}
+                          >
+                            {PROFESORS.map(element => (
+                              <MenuItem value={element} key={element}>
+                                {element}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
 
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel id="time">Horario</InputLabel>
-            <Select
-              labelId="time"
-              id="time-select-helper"
-              label='Horario'
-              value={time}
-              onChange={handleTime}
-            >
-              {TIMES.map(element => (
-                <MenuItem value={element} key={element}>
-                  {element}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+                        <FormControl sx={{ minWidth: 120 }}>
+                          <InputLabel id="time">Horario</InputLabel>
+                          <Select
+                            labelId="time"
+                            id="time-select-helper"
+                            name="time"
+                            value={values.time}
+                            onChange={(event) => setFieldValue('time', event.target.value)}
+                          >
+                            {TIMES.map(element => (
+                              <MenuItem value={element} key={element}>
+                                {element}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
 
-          <ButtonGroup size='large'>
-            {DAYS.map(element => (
-              <Button
-                key={element.value}
-                onClick={() => handleDays(element.value)}
-                variant={days.find(item => item === element.value) ? 'contained' : 'outlined'}
-              >
-                {element.display}
-              </Button>
-            ))}
-          </ButtonGroup>
+                        <ButtonGroup size='large'>
+                          {DAYS.map(element => (
+                            <Button
+                              key={element.value}
+                              onClick={() => {
+                                const newDays = values.days.includes(element.value)
+                                  ? values.days.filter(day => day !== element.value)
+                                  : [...values.days, element.value];
+                                setFieldValue('days', newDays);
+                              }}
+                              variant={values.days.includes(element.value) ? 'contained' : 'outlined'}
+                            >
+                              {element.display}
+                            </Button>
+                          ))}
+                        </ButtonGroup>
 
-          <Button variant='contained' size='large' onClick={handleAddCourse}>
-            <AddBoxRoundedIcon fontSize='large' />
-          </Button>
-        </InputWrapperRow>
+                        <Button variant='contained' size='large' onClick={() => addCourse(values, push, setFieldValue)}>
+                          <AddBoxRoundedIcon fontSize='large' />
+                        </Button>
+                      </InputWrapperRow>
 
-        <ChipContainer sx={{ '& .MuiChip-root': { alignSelf: 'flex-start'} }}>
-          {courseInfo.map((course, idx) => (
-            <Chip key={`${course.name}-${idx}`} variant='outlined' label={generateCourseString(course)} onDelete={() => removeCourse(idx)} />
-          ))}
-        </ChipContainer>
-      </div>
+                      <ChipContainer sx={{ '& .MuiChip-root': { alignSelf: 'flex-start' } }}>
+                        {values.courses.map((course, idx) => (
+                          <Chip
+                            key={`${course.name}-${idx}`}
+                            variant='outlined'
+                            label={generateCourseString(course)}
+                            onDelete={() => remove(idx)}
+                          />
+                        ))}
+                      </ChipContainer>
+                      <ErrorMessage name="courses">
+                        {msg => <Typography variant='body1' color='red'>{msg}</Typography>}
+                      </ErrorMessage>
+                    </>
+                  )}
+                </FieldArray>
+            </div>
 
-      <Divider sx={{ margin: '16px 0px' }} />
+            <Divider sx={{ margin: '16px 0px' }} />
+            <div>
+              <Typography variant='h5'>Informacion del tutor</Typography>
+              <InputWrapperColumn>
+                <InputWrapper>
+                  <Typography variant='body1'>Nombre completo</Typography>
+                  <TextField
+                    label='Nombre del padre/tutor'
+                    fullWidth
+                    name='tutorName'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.tutorName}
+                  />
+                </InputWrapper>
+                
+                <InputWrapper>
+                  <Typography variant='body1'>Contacto</Typography>
+                  <TextField
+                    label='Telefono del padre/tutor'
+                    fullWidth
+                    name='tutorContactNumber'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.tutorContactNumber}
+                  />
+                </InputWrapper>
+              </InputWrapperColumn>
+            </div>
+            
+            <Divider sx={{ margin: '16px 0px' }} />
 
-      <div>
-        <Typography variant='h5'>Informacion del tutor</Typography>
-        <InputWrapperColumn>
-          <InputWrapper>
-            <Typography variant='body1'>Nombre completo</Typography>
-            <TextField
-              label='Nombre del padre/tutor'
-              fullWidth
-              name='name'
-              onChange={handleTutorInput}
-              value={tutorInfo.name}
-            />
-          </InputWrapper>
-          
-          <InputWrapper>
-            <Typography variant='body1'>Contacto</Typography>
-            <TextField
-              label='Telefono del padre/tutor'
-              fullWidth
-              name='contactNumber'
-              onChange={handleTutorInput}
-              value={tutorInfo.contactNumber}
-            />
-          </InputWrapper>
-        </InputWrapperColumn>
-      </div>
-      
-      <Divider sx={{ margin: '16px 0px' }} />
-
-      <ButtonContainer>
-        <Button variant='contained' color='error'>Cancelar</Button>
-        <Button variant='contained' color='primary' type='submit'>Guardar</Button>
-      </ButtonContainer>
-
-    </ContainerPage>
+            <ButtonContainer>
+              <Button variant='contained' color='error' onClick={handleGoBack}>Cancelar</Button>
+              <Button variant='contained' color='primary' type='submit'>Guardar</Button>
+            </ButtonContainer>
+          </Form>
+        </ContainerPage>
+      )}
+    </Formik>
   )
 };
 

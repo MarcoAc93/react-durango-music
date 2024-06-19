@@ -1,6 +1,6 @@
 import { styled } from "@mui/material";
 
-export const ContainerPage = styled('form')({
+export const ContainerPage = styled('div')({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
