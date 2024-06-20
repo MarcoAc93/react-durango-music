@@ -1,7 +1,9 @@
 import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, ButtonGroup, InputLabel, Chip } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { FieldArray, Formik, Form, ErrorMessage } from 'formik';
+import { FieldArray, Formik, Form, ErrorMessage, FormikHelpers } from 'formik';
+import { useMutation } from '@apollo/client';
 
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -10,6 +12,7 @@ import { Title } from '../../components';
 import { ChipContainer, ContainerPage, InputWrapperColumn, InputWrapperRow, ButtonContainer, HeaderWrapper, InputWrapper } from './styles';
 import { Course, FormValues } from './types'
 import { COURSES, DAYS, PROFESORS, TIMES, daysToSpanish } from './constants';
+import { CREATE_STUDENT } from '../../queries';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Nombre del alumno requerido'),
@@ -29,22 +32,24 @@ const validationSchema = Yup.object().shape({
   ),
 });
 
+const initialValues: FormValues = {
+  name: '',
+  lastName: '',
+  email: '',
+  cellphone: '',
+  age: '',
+  tutorName: '',
+  tutorContactNumber: '',
+  course: '', // Temp field for adding new course
+  profesor: '', // Temp field for adding new course
+  time: '', // Temp field for adding new course
+  days: [] as string[], // Temp field for adding new course
+  courses: [] as unknown as [Course]
+};
+
 const NewStudent = () => {
   const navigate = useNavigate();
-  const initialValues: FormValues = {
-    name: '',
-    lastName: '',
-    email: '',
-    cellphone: '',
-    age: '',
-    tutorName: '',
-    tutorContactNumber: '',
-    course: '', // Temp field for adding new course
-    profesor: '', // Temp field for adding new course
-    time: '', // Temp field for adding new course
-    days: [] as string[], // Temp field for adding new course
-    courses: [] as unknown as [Course]
-  };
+  const [createStudentMutation, { loading }] = useMutation(CREATE_STUDENT);
 
   const handleGoBack = () => navigate('/dashboard');
 
@@ -66,10 +71,35 @@ const NewStudent = () => {
       setFieldValue('time', '');
       setFieldValue('days', []);
     }
-  }
+  };
 
-  const onSubmit = (values: FormValues) => {
-    console.log(values);
+  const onError = (error: any) => {
+    console.log(error);
+  };
+
+  const onSubmit = (values: FormValues, { resetForm }: FormikHelpers<FormValues>) => {
+    createStudentMutation({
+      variables: {
+        input: {
+          name: values.name,
+          lastName: values.lastName,
+          cellphone: values.cellphone,
+          email: values.email,
+          age: values.age,
+          tutor: {
+            name: values.tutorName,
+            cellphone: values.tutorContactNumber,
+          },
+        },
+      },
+      onCompleted: (data) => {
+        if (data.createStudent?.success) {
+          resetForm();
+          console.log('Alumno creado correctamente');
+        }
+      },
+      onError,
+    })
   };
 
   return (
@@ -284,7 +314,7 @@ const NewStudent = () => {
 
             <ButtonContainer>
               <Button variant='contained' color='error' onClick={handleGoBack}>Cancelar</Button>
-              <Button variant='contained' color='primary' type='submit'>Guardar</Button>
+              <LoadingButton variant='contained' color='primary' type='submit' loading={loading}>Guardar</LoadingButton>
             </ButtonContainer>
           </Form>
         </ContainerPage>

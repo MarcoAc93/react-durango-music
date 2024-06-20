@@ -29,40 +29,36 @@ export const GET_STUDENTS = gql`
         age
         cellphone
         email
-        deregister {
-          comment
-          date
-        }
-        enrollment {
-          amount
-          id
-          payed
-          period
-          scholarship
-          studentId
-          courses {
-            days {
-              friday
-              monday
-              saturday
-              sunday
-              thursday
-              tuesday
-              wednesday
-            }
-            name
-            profesor
-            time
-          }
-        }
         id
         lastName
         name
         tutor {
-          contactNumber
+          cellphone
           name
         }
       }
     }
   }
 `
+
+export const CREATE_STUDENT = gql`
+  mutation CreateStudent($input: StudentInput!) {
+    createStudent(input: $input) {
+      code
+      message
+      success
+      student {
+        age
+        cellphone
+        email
+        id
+        lastName
+        name
+        tutor {
+          cellphone
+          name
+        }
+      }
+    }
+  }
+`;

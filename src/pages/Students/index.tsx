@@ -40,8 +40,6 @@ const Students = () => {
 
   if (loading) return <PageLoader />
 
-  if (error) return <Error title="Ups, also salio mal" description='Hubo un error en el servidor, lo sentimos :(' />
-
   return (
     <Container>
       <Title>Alumnos</Title>
@@ -50,17 +48,21 @@ const Students = () => {
         <Button variant='contained' color='warning'>Editar</Button>
         <Button variant='contained' color='secondary'>Eliminar</Button>
       </ControlContainer>
-      <DataGrid
-        rows={data.getStudents.students}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 15 },
-          },
-        }}
-        pageSizeOptions={[15]}
-        checkboxSelection
-      />
+      {error ? (
+        <Error title="Ups, also salio mal" description='Hubo un error en el servidor, lo sentimos :(' />
+      ) : (
+        <DataGrid
+          rows={data.getStudents.students}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 15 },
+            },
+          }}
+          pageSizeOptions={[15]}
+          checkboxSelection
+        />
+      )}
     </Container>
   )
 }
