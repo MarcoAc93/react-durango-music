@@ -332,7 +332,7 @@ const NewStudent = () => {
                   <LoadingButton variant='contained' color='primary' type='submit' loading={loading} fullWidth>Guardar</LoadingButton>
                 </Grid>
               </Grid>
-              <Divider sx={{ margin: '16px 0px' }} />
+              <Divider sx={{ margin: '8px 0px' }} />
             </ContainerPage>
           </Form>
         )}
@@ -342,155 +342,158 @@ const NewStudent = () => {
         <Formik initialValues={initialValuesEnrollment} validationSchema={validatonSchemaEnrollment} onSubmit={onSubmitEnrollStudent}>
           {({ values, handleChange, handleBlur, setFieldValue, errors, touched }) => (
             <Form>
-              <div>
-                <Typography variant='h5' sx={{ marginBottom: 1 }}>Seleccionar curso</Typography>
-                <FieldArray name="courses">
-                  {({ push, remove }) => (
-                    <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
-                      <Grid item xs={12} md={2}>
-                        <FormControl fullWidth>
-                          <InputLabel id="course">Curso</InputLabel>
-                          <Select
-                            labelId="course"
-                            id="course-select-helper"
-                            name="course"
-                            value={values.course}
-                            onChange={(event) => setFieldValue('course', event.target.value)}
-                            onBlur={handleBlur}
-                          >
-                            {COURSES.map(element => (
-                              <MenuItem value={element} key={element}>
-                                {element}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                          {errors.course && touched.course && <Typography variant='body1' color='red'>{errors.course}</Typography>}
-                        </FormControl>
-                      </Grid>
-
-                      <Grid item xs={12} md={2}>
-                        <FormControl fullWidth>
-                          <InputLabel id="profesor">Profesor</InputLabel>
-                          <Select
-                            labelId="profesor"
-                            id="profesor-select-helper"
-                            name="profesor"
-                            value={values.profesor}
-                            onChange={(event) => setFieldValue('profesor', event.target.value)}
-                          >
-                            {PROFESORS.map(element => (
-                              <MenuItem value={element} key={element}>
-                                {element}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-
-                      <Grid item xs={12} md={2}>
-                        <FormControl fullWidth>
-                          <InputLabel id="time">Horario</InputLabel>
-                          <Select
-                            labelId="time"
-                            id="time-select-helper"
-                            name="time"
-                            value={values.time}
-                            onChange={(event) => setFieldValue('time', event.target.value)}
-                          >
-                            {TIMES.map(element => (
-                              <MenuItem value={element} key={element}>
-                                {element}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-
-                      <Grid item xs={12} md={3}>
-                        <ButtonGroup size='large' fullWidth sx={{ minHeight: '100%' }}>
-                          {DAYS.map(element => (
-                            <Button
-                              key={element.value}
-                              onClick={() => {
-                                const newDays = values.days.includes(element.value)
-                                  ? values.days.filter(day => day !== element.value)
-                                  : [...values.days, element.value];
-                                setFieldValue('days', newDays);
-                              }}
-                              variant={values.days.includes(element.value) ? 'contained' : 'outlined'}
+              <ContainerPage>
+                <div>
+                  <Typography variant='h5' sx={{ marginBottom: 1 }}>Seleccionar curso</Typography>
+                  <FieldArray name="courses">
+                    {({ push, remove }) => (
+                      <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
+                        <Grid item xs={12} md={2}>
+                          <FormControl fullWidth>
+                            <InputLabel id="course">Curso</InputLabel>
+                            <Select
+                              labelId="course"
+                              id="course-select-helper"
+                              name="course"
+                              value={values.course}
+                              onChange={(event) => setFieldValue('course', event.target.value)}
+                              onBlur={handleBlur}
                             >
-                              {element.display}
-                            </Button>
-                          ))}
-                        </ButtonGroup>
-                      </Grid>
+                              {COURSES.map(element => (
+                                <MenuItem value={element} key={element}>
+                                  {element}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            {errors.course && touched.course && <Typography variant='body1' color='red'>{errors.course}</Typography>}
+                          </FormControl>
+                        </Grid>
 
-                      <Grid item xs={12} md={1}>
-                        <Button variant='contained' size='large' onClick={() => addCourse(values, push)} fullWidth>
-                          <AddBoxRoundedIcon fontSize='large' />
-                        </Button>
-                      </Grid>
+                        <Grid item xs={12} md={2}>
+                          <FormControl fullWidth>
+                            <InputLabel id="profesor">Profesor</InputLabel>
+                            <Select
+                              labelId="profesor"
+                              id="profesor-select-helper"
+                              name="profesor"
+                              value={values.profesor}
+                              onChange={(event) => setFieldValue('profesor', event.target.value)}
+                            >
+                              {PROFESORS.map(element => (
+                                <MenuItem value={element} key={element}>
+                                  {element}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
 
-                      <Grid item xs={12} md={12}>
-                        <ChipContainer sx={{ '& .MuiChip-root': { alignSelf: 'flex-start' } }}>
-                          {values.courses.map((course, idx) => (
-                            <Chip
-                              key={`${course.name}-${idx}`}
-                              variant='outlined'
-                              label={generateCourseString(course)}
-                              onDelete={() => remove(idx)}
-                            />
-                          ))}
-                        </ChipContainer>
+                        <Grid item xs={12} md={2}>
+                          <FormControl fullWidth>
+                            <InputLabel id="time">Horario</InputLabel>
+                            <Select
+                              labelId="time"
+                              id="time-select-helper"
+                              name="time"
+                              value={values.time}
+                              onChange={(event) => setFieldValue('time', event.target.value)}
+                            >
+                              {TIMES.map(element => (
+                                <MenuItem value={element} key={element}>
+                                  {element}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12} md={3}>
+                          <ButtonGroup size='large' fullWidth sx={{ minHeight: '100%' }}>
+                            {DAYS.map(element => (
+                              <Button
+                                key={element.value}
+                                onClick={() => {
+                                  const newDays = values.days.includes(element.value)
+                                    ? values.days.filter(day => day !== element.value)
+                                    : [...values.days, element.value];
+                                  setFieldValue('days', newDays);
+                                }}
+                                variant={values.days.includes(element.value) ? 'contained' : 'outlined'}
+                              >
+                                {element.display}
+                              </Button>
+                            ))}
+                          </ButtonGroup>
+                        </Grid>
+
+                        <Grid item xs={12} md={1}>
+                          <Button variant='contained' size='large' onClick={() => addCourse(values, push)} fullWidth>
+                            <AddBoxRoundedIcon fontSize='large' />
+                          </Button>
+                        </Grid>
+
+                        <Grid item xs={12} md={12}>
+                          <ChipContainer sx={{ '& .MuiChip-root': { alignSelf: 'flex-start' } }}>
+                            {values.courses.map((course, idx) => (
+                              <Chip
+                                key={`${course.name}-${idx}`}
+                                variant='outlined'
+                                label={generateCourseString(course)}
+                                onDelete={() => remove(idx)}
+                              />
+                            ))}
+                          </ChipContainer>
+                        </Grid>
+                        <ErrorMessage name="courses">
+                          {msg => <Typography variant='body1' color='red'>{msg}</Typography>}
+                        </ErrorMessage>
                       </Grid>
-                      <ErrorMessage name="courses">
-                        {msg => <Typography variant='body1' color='red'>{msg}</Typography>}
-                      </ErrorMessage>
+                    )}
+                  </FieldArray>
+                  <Divider sx={{ margin: '8px 0px' }} />
+                </div>
+
+                <div>
+                  <Typography variant='h5' sx={{ marginBottom: 1 }}>Inscripción</Typography>
+                  <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
+                    <Grid item xs={12} md={3}>
+                      <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label-period">Periodo</InputLabel>  
+                        <Select
+                          labelId="demo-simple-select-label-period"
+                          id="demo-simple-select-period"
+                          name='period'
+                          value={values.period}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        >
+                          {PERIODS.map(element => (
+                            <MenuItem key={element} value={element}>{element}</MenuItem>
+                          ))}
+                        </Select>
+                        {errors.period && touched.period && <Typography variant='body1' color='red'>{errors.period}</Typography>}
+                      </FormControl>
                     </Grid>
-                  )}
-                </FieldArray>
-              </div>
-
-              <div>
-                <Typography variant='h5' sx={{ marginBottom: 1 }}>Inscripción</Typography>
-                <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
-                  <Grid item xs={12} md={3}>
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label-period">Periodo</InputLabel>  
-                      <Select
-                        labelId="demo-simple-select-label-period"
-                        id="demo-simple-select-period"
-                        name='period'
-                        value={values.period}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      >
-                        {PERIODS.map(element => (
-                          <MenuItem key={element} value={element}>{element}</MenuItem>
-                        ))}
-                      </Select>
-                      {errors.period && touched.period && <Typography variant='body1' color='red'>{errors.period}</Typography>}
-                    </FormControl>
+                    <Grid item xs={12} md={3}>
+                      <FormControl fullWidth>
+                        <TextField
+                          label='Cantidad de inscripción'
+                          fullWidth
+                          name='amount'
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.amount}
+                        />
+                      </FormControl>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} md={3}>
-                    <FormControl fullWidth>
-                      <TextField
-                        label='Cantidad de inscripción'
-                        fullWidth
-                        name='amount'
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.amount}
-                      />
-                    </FormControl>
+                  <Grid container columns={12} justifyContent='flex-end' sx={{ marginTop: 2 }} >
+                    <Grid item xs={12} md={3}>
+                      <LoadingButton variant='contained' color='primary' type='submit' loading={loadingEnroll} fullWidth>Inscribir</LoadingButton>
+                    </Grid>
                   </Grid>
-                </Grid>
-                <Grid container columns={12} justifyContent='flex-end' sx={{ marginTop: 2 }} >
-                  <Grid item xs={12} md={3}>
-                    <LoadingButton variant='contained' color='primary' type='submit' loading={loadingEnroll} fullWidth>Inscribir</LoadingButton>
-                  </Grid>
-                </Grid>
-              </div>
+                </div>
+              </ContainerPage>
             </Form>
           )}
         </Formik>
