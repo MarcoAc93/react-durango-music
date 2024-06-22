@@ -149,72 +149,77 @@ const NewStudent = () => {
 
               <div>
                 <Typography variant='h5'>Informacion del alumno</Typography>
-                <InputWrapperColumn>
-                  <InputWrapper>
-                    <Typography variant='body1'>Nombre/s</Typography>
-                    <TextField
-                      label='Nombre del alumno'
-                      fullWidth
-                      name='name'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.name}
-                    />
-                    {errors.name && touched.name && <Typography variant='body1' color='red'>{errors.name}</Typography>}
-                  </InputWrapper>
+                <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
+                  <Grid item xs={12} md={2}>
+                    <FormControl fullWidth>
+                      <TextField
+                        label='Nombre del alumno'
+                        fullWidth
+                        name='name'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.name}
+                      />
+                      {errors.name && touched.name && <Typography variant='body1' color='red'>{errors.name}</Typography>}
+                    </FormControl>
+                  </Grid>
 
-                  <InputWrapper>
-                    <Typography variant='body1'>Apellidos</Typography>
-                    <TextField
-                      label='Apellidos del alumno'
-                      fullWidth
-                      name='lastName'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.lastName}
-                    />
-                    {errors.lastName && touched.lastName && <Typography variant='body1' color='red'>{errors.lastName}</Typography>}
-                  </InputWrapper>
+                  <Grid item xs={12} md={2}>
+                    <FormControl fullWidth>
+                      <TextField
+                        label='Apellidos del alumno'
+                        fullWidth
+                        name='lastName'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.lastName}
+                      />
+                      {errors.lastName && touched.lastName && <Typography variant='body1' color='red'>{errors.lastName}</Typography>}
+                    </FormControl>
+                  </Grid>
 
-                  <InputWrapper>
-                    <Typography variant='body1'>Email</Typography>
-                    <TextField
-                      label='Email del alumno'
-                      fullWidth
-                      name='email'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.email}
-                    />
-                    {errors.email && touched.email && <Typography variant='body1' color='red'>{errors.email}</Typography>}
-                  </InputWrapper>
-                  
-                  <InputWrapper>
-                    <Typography variant='body1'>Telefono</Typography>
-                    <TextField
-                      label='Telefono de contacto'
-                      fullWidth
-                      name='cellphone'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.cellphone}
-                    />
-                    {errors.cellphone && touched.cellphone && <Typography variant='body1' color='red'>{errors.cellphone}</Typography>}
-                  </InputWrapper>
-                  
-                  <InputWrapper>
-                    <Typography variant='body1'>Edad</Typography>
-                    <TextField
-                      label='Edad del alumno'
-                      fullWidth
-                      name='age'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.age}
-                    />
-                  </InputWrapper>
-                </InputWrapperColumn>
-                <Divider sx={{ margin: '8px 0px' }} />
+                  <Grid item xs={12} md={2}>
+                    <FormControl fullWidth>
+                      <TextField
+                        label='Email del alumno'
+                        fullWidth
+                        name='email'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.email}
+                      />
+                      {errors.email && touched.email && <Typography variant='body1' color='red'>{errors.email}</Typography>}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} md={2}>
+                    <FormControl fullWidth>
+                      <TextField
+                        label='Telefono de contacto'
+                        fullWidth
+                        name='cellphone'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.cellphone}
+                      />
+                      {errors.cellphone && touched.cellphone && <Typography variant='body1' color='red'>{errors.cellphone}</Typography>}
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} md={2}>
+                    <FormControl fullWidth>
+                      <TextField
+                        label='Edad del alumno'
+                        fullWidth
+                        name='age'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.age}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Divider sx={{ margin: '16px 0px' }} />
               </div>
 
               <div>
@@ -347,40 +352,41 @@ const NewStudent = () => {
                 <Divider sx={{ margin: '8px 0px' }} />
               </div>
 
-              
-              <Typography variant='h5' sx={{ marginBottom: 1 }}>Inscripción</Typography>  
-              <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
-                <Grid item xs={12} md={3}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label-period">Periodo</InputLabel>  
-                    <Select
-                      labelId="demo-simple-select-label-period"
-                      id="demo-simple-select-period"
-                      name='period'
-                      value={values.period}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    >
-                      {PERIODS.map(element => (
-                        <MenuItem key={element} value={element}>{element}</MenuItem>
-                      ))}
-                    </Select>
-                    {errors.period && touched.period && <Typography variant='body1' color='red'>{errors.period}</Typography>}
-                  </FormControl>
+              <div>
+                <Typography variant='h5' sx={{ marginBottom: 1 }}>Inscripción</Typography>
+                <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
+                  <Grid item xs={12} md={3}>
+                    <FormControl fullWidth>
+                      <InputLabel id="demo-simple-select-label-period">Periodo</InputLabel>  
+                      <Select
+                        labelId="demo-simple-select-label-period"
+                        id="demo-simple-select-period"
+                        name='period'
+                        value={values.period}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      >
+                        {PERIODS.map(element => (
+                          <MenuItem key={element} value={element}>{element}</MenuItem>
+                        ))}
+                      </Select>
+                      {errors.period && touched.period && <Typography variant='body1' color='red'>{errors.period}</Typography>}
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <FormControl fullWidth>
+                      <TextField
+                        label='Cantidad de inscripción'
+                        fullWidth
+                        name='amount'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.amount}
+                      />
+                    </FormControl>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} md={3}>
-                  <FormControl fullWidth>
-                    <TextField
-                      label='Cantidad de inscripción'
-                      fullWidth
-                      name='amount'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.amount}
-                    />
-                  </FormControl>
-                </Grid>
-              </Grid>
+              </div>
               <Divider />
 
               <ButtonContainer>
