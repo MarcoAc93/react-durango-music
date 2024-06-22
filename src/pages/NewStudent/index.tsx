@@ -55,8 +55,14 @@ const initialValues: FormValues = {
 const NewStudent = () => {
   const isMobile = useMediaQuery('sm');
   const navigate = useNavigate();
-  const [createStudentMutation, { loading }] = useMutation(CREATE_STUDENT);
-  const [enrollStudentMutation] = useMutation(ENROLL_STUDENT);
+  const authorization = localStorage.getItem('token');
+  const [createStudentMutation, { loading }] = useMutation(CREATE_STUDENT, {
+    refetchQueries: ['GetStudents'],
+    context: { headers: { authorization } },
+  });
+  const [enrollStudentMutation] = useMutation(ENROLL_STUDENT, {
+    context: { headers: { authorization } },
+  });
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState({ title: '', description: '' });
 

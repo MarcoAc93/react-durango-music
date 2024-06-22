@@ -9,7 +9,10 @@ import { GET_STUDENTS } from '../../queries';
 import { Container, ControlContainer } from './styles';
 
 const Students = () => {
-  const { loading, data, error } = useQuery(GET_STUDENTS);
+  const authorization = localStorage.getItem('token');
+  const { loading, data, error } = useQuery(GET_STUDENTS, {
+    context: { headers: { authorization } }
+  });
   const navigate = useNavigate()
 
   const columns = useMemo(() => {
@@ -28,7 +31,7 @@ const Students = () => {
         field: 'cellphone',
         headerName: 'Telefono',
         type: 'string',
-        width: 110,
+        width: 125,
       },
     ];
     return columnsData
