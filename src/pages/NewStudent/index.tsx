@@ -224,33 +224,34 @@ const NewStudent = () => {
 
               <div>
                 <Typography variant='h5'>Informacion del tutor</Typography>
-                <InputWrapperColumn>
-                  <InputWrapper>
-                    <Typography variant='body1'>Nombre completo</Typography>
-                    <TextField
-                      label='Nombre del padre/tutor'
-                      fullWidth
-                      name='tutorName'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.tutorName}
-                    />
-                    {errors.tutorContactNumber && touched.tutorContactNumber && <Typography variant='body1' color='red'>{errors.tutorContactNumber}</Typography>}
-                  </InputWrapper>
-                  
-                  <InputWrapper>
-                    <Typography variant='body1'>Contacto</Typography>
-                    <TextField
-                      label='Telefono del padre/tutor'
-                      fullWidth
-                      name='tutorContactNumber'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.tutorContactNumber}
-                    />
-                  </InputWrapper>
-                </InputWrapperColumn>
-                <Divider sx={{ margin: '8px 0px' }} />
+                <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
+                  <Grid item xs={12} md={4}>
+                    <FormControl fullWidth>
+                      <TextField
+                        label='Nombre del padre/tutor'
+                        fullWidth
+                        name='tutorName'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.tutorName}
+                      />
+                      {errors.tutorContactNumber && touched.tutorContactNumber && <Typography variant='body1' color='red'>{errors.tutorContactNumber}</Typography>}
+                    </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <FormControl fullWidth>
+                      <TextField
+                        label='Telefono del padre/tutor'
+                        fullWidth
+                        name='tutorContactNumber'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.tutorContactNumber}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <Divider sx={{ margin: '16px 0px' }} />
               </div>
               
 
