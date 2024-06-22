@@ -3,14 +3,14 @@ import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, 
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { FieldArray, Formik, Form, ErrorMessage } from 'formik';
+import { FieldArray, Formik, Form, ErrorMessage, FormikHelpers } from 'formik';
 import { useMutation } from '@apollo/client';
 
 import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { Title, Modal } from '../../components';
-import { ChipContainer, ContainerPage, InputWrapperColumn, InputWrapperRow, ButtonContainer, HeaderWrapper, InputWrapper } from './styles';
+import { ChipContainer, ContainerPage, ButtonContainer, HeaderWrapper } from './styles';
 import { Course, FormValues } from './types'
 import { COURSES, DAYS, PROFESORS, TIMES, daysToSpanish, PERIODS } from './constants';
 import { CREATE_STUDENT, ENROLL_STUDENT } from '../../queries';
@@ -68,10 +68,8 @@ const NewStudent = () => {
     setOpenModal(false);
   }
 
-  const generateCourseString = (courseInfo: Course) => {
-    // @ts-ignore
-    return `Curso de ${courseInfo.name} con ${courseInfo.profesor} a las ${courseInfo.time} los dias ${courseInfo.days?.map(el => daysToSpanish[el]).join(', ')}`
-  };
+  // @ts-ignore
+  const generateCourseString = (courseInfo: Course) => `Curso de ${courseInfo.name} con ${courseInfo.profesor} a las ${courseInfo.time} los dias ${courseInfo.days?.map(el => daysToSpanish[el]).join(', ')}`;
 
   const addCourse = (values: FormValues, push: any, setFieldValue: any) => {
     if (values.course && values.profesor && values.time && values.days.length > 0) {
@@ -93,7 +91,7 @@ const NewStudent = () => {
     handleOpenModal();
   };
 
-  const onCompleted = (data: any, formValues: FormValues) => {
+  const onCompleted = (data: any, formValues: FormValues, resetForm?: any) => {
     if (data.createStudent?.success) {
       // @ts-ignore
       formValues.courses.forEach(course => { course.days = course.days.map(day => daysToSpanish[day]) });
@@ -108,15 +106,17 @@ const NewStudent = () => {
           },
         },
         onCompleted(data) {
-          if (data?.enrollStudent?.success) setOpenModal(true)
+          if (data?.enrollStudent?.success) {
+            setOpenModal(true)
+            resetForm();
+          }
         },
         onError
       })
     }
   };
 
-  const onSubmit = (values: FormValues) => {
-    console.log(values);
+  const onSubmit = (values: FormValues, { resetForm }: FormikHelpers<FormValues>) => {
     createStudentMutation({
       variables: {
         input: {
@@ -131,7 +131,7 @@ const NewStudent = () => {
           },
         },
       },
-      onCompleted: (response) => onCompleted(response, values),
+      onCompleted: (response) => onCompleted(response, values, resetForm),
       onError,
     })
   };
@@ -154,7 +154,6 @@ const NewStudent = () => {
                     <FormControl fullWidth>
                       <TextField
                         label='Nombre del alumno'
-                        fullWidth
                         name='name'
                         onChange={handleChange}
                         onBlur={handleBlur}
