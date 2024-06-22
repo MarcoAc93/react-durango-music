@@ -13,12 +13,6 @@ export const HeaderWrapper = styled('div')({
   alignItems: 'center',
 });
 
-
-export const ButtonContainer = styled('div')({
-  display: 'flex',
-  gap: 16
-});
-
 export const ChipContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
