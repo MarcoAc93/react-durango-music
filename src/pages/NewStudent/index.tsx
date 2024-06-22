@@ -253,15 +253,14 @@ const NewStudent = () => {
                 </Grid>
                 <Divider sx={{ margin: '16px 0px' }} />
               </div>
-              
 
               <div>
                 <Typography variant='h5' sx={{ marginBottom: 1 }}>Curso</Typography>
                 <FieldArray name="courses">
                   {({ push, remove }) => (
-                    <>
-                      <InputWrapperRow>
-                        <FormControl sx={{ minWidth: 120 }}>
+                    <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2}>
+                      <Grid item xs={12} md={2}>
+                        <FormControl fullWidth>
                           <InputLabel id="course">Curso</InputLabel>
                           <Select
                             labelId="course"
@@ -277,8 +276,10 @@ const NewStudent = () => {
                             ))}
                           </Select>
                         </FormControl>
+                      </Grid>
 
-                        <FormControl sx={{ minWidth: 120 }}>
+                      <Grid item xs={12} md={2}>
+                        <FormControl fullWidth>
                           <InputLabel id="profesor">Profesor</InputLabel>
                           <Select
                             labelId="profesor"
@@ -294,8 +295,10 @@ const NewStudent = () => {
                             ))}
                           </Select>
                         </FormControl>
+                      </Grid>
 
-                        <FormControl sx={{ minWidth: 120 }}>
+                      <Grid item xs={12} md={2}>
+                        <FormControl fullWidth>
                           <InputLabel id="time">Horario</InputLabel>
                           <Select
                             labelId="time"
@@ -311,8 +314,10 @@ const NewStudent = () => {
                             ))}
                           </Select>
                         </FormControl>
+                      </Grid>
 
-                        <ButtonGroup size='large'>
+                      <Grid item xs={12} md={3}>
+                        <ButtonGroup size='large' fullWidth sx={{ minHeight: '100%' }}>
                           {DAYS.map(element => (
                             <Button
                               key={element.value}
@@ -328,29 +333,33 @@ const NewStudent = () => {
                             </Button>
                           ))}
                         </ButtonGroup>
+                      </Grid>
 
-                        <Button variant='contained' size='large' onClick={() => addCourse(values, push, setFieldValue)}>
+                      <Grid item xs={12} md={1}>
+                        <Button variant='contained' size='large' onClick={() => addCourse(values, push, setFieldValue)} fullWidth>
                           <AddBoxRoundedIcon fontSize='large' />
                         </Button>
-                      </InputWrapperRow>
+                      </Grid>
 
-                      <ChipContainer sx={{ '& .MuiChip-root': { alignSelf: 'flex-start' } }}>
-                        {values.courses.map((course, idx) => (
-                          <Chip
-                            key={`${course.name}-${idx}`}
-                            variant='outlined'
-                            label={generateCourseString(course)}
-                            onDelete={() => remove(idx)}
-                          />
-                        ))}
-                      </ChipContainer>
+                      <Grid item xs={12} md={12}>
+                        <ChipContainer sx={{ '& .MuiChip-root': { alignSelf: 'flex-start' } }}>
+                          {values.courses.map((course, idx) => (
+                            <Chip
+                              key={`${course.name}-${idx}`}
+                              variant='outlined'
+                              label={generateCourseString(course)}
+                              onDelete={() => remove(idx)}
+                            />
+                          ))}
+                        </ChipContainer>
+                      </Grid>
                       <ErrorMessage name="courses">
                         {msg => <Typography variant='body1' color='red'>{msg}</Typography>}
                       </ErrorMessage>
-                    </>
+                    </Grid>
                   )}
                 </FieldArray>
-                <Divider sx={{ margin: '8px 0px' }} />
+                <Divider />
               </div>
 
               <div>
