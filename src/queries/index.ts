@@ -41,6 +41,23 @@ export const GET_STUDENTS = gql`
   }
 `
 
+export const GET_STUDENT = gql`
+  query GetStudent($studentId: ID!) {
+    getStudent(studentId: $studentId) {
+      age
+      cellphone
+      email
+      id
+      lastName
+      name
+      tutor {
+        cellphone
+        name
+      }
+    }
+  }
+`;
+
 export const CREATE_STUDENT = gql`
   mutation CreateStudent($input: StudentInput!) {
     createStudent(input: $input) {
@@ -60,6 +77,12 @@ export const CREATE_STUDENT = gql`
         }
       }
     }
+  }
+`;
+
+export const UPDATE_STUDENT = gql`
+  mutation EditStudent($studentId: ID!, $input: StudentInput!) {
+    editStudent(studentId: $studentId, input: $input)
   }
 `;
 

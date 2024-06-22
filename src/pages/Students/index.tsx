@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import { useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
@@ -37,9 +37,9 @@ const Students = () => {
     return columnsData
   }, []);
 
-  const handleAdd = () => {
-    navigate('/dashboard/nuevo-alumno');
-  }
+  const handleAdd = () => navigate('/dashboard/nuevo-alumno');
+
+  const onRowClick = (params: GridRowParams) => navigate(`/dashboard/editar-alumno/${params.id}`);
 
   if (loading) return <PageLoader />
 
@@ -57,6 +57,7 @@ const Students = () => {
         <DataGrid
           rows={data.getStudents.students}
           columns={columns}
+          onRowClick={onRowClick}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 15 },
