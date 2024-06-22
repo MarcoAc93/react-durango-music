@@ -1,14 +1,7 @@
-export enum Time {
-  FIVE_TO_SIX = '5pm - 6pm',
-  SIX_TO_SEVEN = '6pm - 7pm',
-  SEVEN_TO_EIGHT = '7pm - 8pm',
-  EIGHT_TO_NINE = '8pm - 9pm'
-}
-
 export type Course = {
   name: string;
   profesor: string;
-  time: Time
+  time: string;
   days: string[];
 }
 
@@ -25,4 +18,6 @@ export type FormValues = {
   time: string, // Temp field for adding new course
   days: string[], // Temp field for adding new course
   courses: [Course];
+  period: string
+  amount: string;
 };

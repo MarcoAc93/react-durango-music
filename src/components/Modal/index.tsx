@@ -31,14 +31,13 @@ type Props = {
   handleClose?: () => void;
   title?: string;
   description?: string
-  onContinue?: () => void;
   error?: {
     title: string;
     description: string;
   }
 }
 
-const Modal = ({ open = false, handleClose, title, onContinue, description, error }: Props) => (
+const Modal = ({ open = false, handleClose, title, description, error }: Props) => (
   <BootstrapDialog
     onClose={handleClose}
     aria-labelledby="customized-dialog-title"
@@ -65,11 +64,8 @@ const Modal = ({ open = false, handleClose, title, onContinue, description, erro
       </Typography>
     </DialogContent>
     <DialogActions>
-      <Button autoFocus onClick={handleClose} variant='outlined' color='warning'>
-        Cancelar
-      </Button>
-      <Button autoFocus onClick={onContinue} variant='contained' color='primary'>
-        Continuar
+      <Button autoFocus onClick={handleClose} variant='outlined' color='primary'>
+        Ok
       </Button>
     </DialogActions>
   </BootstrapDialog>

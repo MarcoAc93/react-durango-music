@@ -62,3 +62,27 @@ export const CREATE_STUDENT = gql`
     }
   }
 `;
+
+export const ENROLL_STUDENT = gql`
+  mutation EnrollStudent($input: EnrollStudentInput!) {
+    enrollStudent(input: $input) {
+      code
+      message
+      success
+      enrollment {
+        id
+        payed
+        period
+        scholarship
+        studentId
+        amount
+        courses {
+          time
+          profesor
+          name
+          days
+        }
+      }
+    }
+  }
+`;

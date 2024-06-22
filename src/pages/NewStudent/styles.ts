@@ -10,7 +10,7 @@ export const ContainerPage = styled('div')({
 
 export const HeaderWrapper = styled('div')({
   display: 'flex',
-  alignItems: 'center'
+  alignItems: 'center',
 });
 
 export const InputWrapperColumn = styled('div')(({ theme }) => ({

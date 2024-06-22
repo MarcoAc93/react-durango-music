@@ -36,4 +36,9 @@ export const daysToSpanish = {
   thursday: 'Jueves',
   friday: 'Viernes',
   saturday: 'Sabado'
-}
+};
+
+export const PERIODS = [
+  'Enero - Junio',
+  'Julio - Diciembre',
+];
