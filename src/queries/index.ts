@@ -36,6 +36,11 @@ export const GET_STUDENTS = gql`
           cellphone
           name
         }
+        active
+        deregister {
+          date
+          reason
+        }
       }
     }
   }
@@ -83,6 +88,12 @@ export const CREATE_STUDENT = gql`
 export const UPDATE_STUDENT = gql`
   mutation EditStudent($studentId: ID!, $input: StudentInput!) {
     editStudent(studentId: $studentId, input: $input)
+  }
+`;
+
+export const DELETE_STUDENT = gql`
+  mutation DeleteStudent($studentId: ID!, $reason: String) {
+    deleteStudent(studentId: $studentId, reason: $reason)
   }
 `;
 

@@ -3,6 +3,7 @@ import Error from "./Error";
 import PageLoader from "./Loader";
 import Title from "./Title";
 import Modal from "./Modal";
+import DeleteStudentModal from "./Modal/DeleteStudent";
 
 export {
   Dashboard,
@@ -10,4 +11,5 @@ export {
   PageLoader,
   Title,
   Modal,
+  DeleteStudentModal
 }
