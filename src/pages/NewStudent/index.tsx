@@ -98,7 +98,7 @@ const NewStudent = () => {
     }
   };
 
-  const onError = (error: any) => setModalState({ isOpen: true, title: 'Hubo un error...', description: error?.message });
+  const onError = (error: any) => setModalState({ isOpen: true, title: 'Hubo un error...', description: error?.message, success: false });
 
   const createNewStudent = (values: FormValuesStudentInfo, resetForm?: any) => {
     createStudentMutation({
@@ -117,7 +117,7 @@ const NewStudent = () => {
       },
       onCompleted: (response) => {
         if (response.createStudent.success) {
-          setModalState({ isOpen: true, description: 'El alumno a sido registrado correctamente', title: 'Alumno agregado' });
+          setModalState({ isOpen: true, description: 'El alumno a sido registrado correctamente', title: 'Alumno agregado', success: true });
           setNewStudentId(response.createStudent.student.id);
           resetForm();
         }
@@ -145,7 +145,7 @@ const NewStudent = () => {
       onError,
       onCompleted: (response) => {
         if (response.editStudent) {
-          setModalState({ isOpen: true, title: 'Información actualizada', description: 'La información del alumno a sido actualizada correctamente' });
+          setModalState({ isOpen: true, title: 'Información actualizada', description: 'La información del alumno a sido actualizada correctamente', success: true });
         }
       }
     })
@@ -162,6 +162,10 @@ const NewStudent = () => {
   const onSubmitEnrollStudent = (values: FormValuesEnrollment, { resetForm }: FormikHelpers<FormValuesEnrollment>) => {
     // @ts-ignore
     values.courses.forEach(course => { course.days = course.days.map(day => daysToSpanish[day]) });
+    if (!newStudentId) {
+      setModalState({ isOpen: true, title: 'Primero registra alumno', description: 'Primero debes de registrar la informacion del alumno para poderlo inscribir a algun curso', success: false })
+      return;
+    }
     enrollStudentMutation({
         variables: {
           input: {
@@ -174,7 +178,7 @@ const NewStudent = () => {
         },
         onCompleted(data) {
           if (data?.enrollStudent?.success) {
-            setModalState({ isOpen: true, title: 'Alumno inscrito', description: 'El alumno a sido inscrito correctamente' });
+            setModalState({ isOpen: true, title: 'Alumno inscrito', description: 'El alumno a sido inscrito correctamente', success: true });
             setNewStudentId('');
             resetForm();
           }
@@ -325,11 +329,15 @@ const NewStudent = () => {
                 <Grid item xs={12} md={3}>
                   <Button variant='contained' color='error' onClick={handleGoBack} fullWidth>Cancelar</Button>
                 </Grid>
+                {editStudent && (
+                  <Grid item xs={12} md={3}>
+                    <Button variant='contained' color='warning' onClick={toggleEdit} fullWidth>Editar</Button>
+                  </Grid>
+                )}
                 <Grid item xs={12} md={3}>
-                  <Button variant='contained' color='warning' onClick={toggleEdit} fullWidth>Editar</Button>
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <LoadingButton variant='contained' color='primary' type='submit' loading={loading} fullWidth>Guardar</LoadingButton>
+                  <LoadingButton variant='contained' color='primary' type='submit' loading={loading} fullWidth disabled={editStudent}>
+                    Guardar
+                  </LoadingButton>
                 </Grid>
               </Grid>
               <Divider sx={{ margin: '8px 0px' }} />
@@ -385,6 +393,7 @@ const NewStudent = () => {
                                 </MenuItem>
                               ))}
                             </Select>
+                            {errors.profesor && touched.profesor && <Typography variant='body1' color='red'>{errors.profesor}</Typography>}
                           </FormControl>
                         </Grid>
 
@@ -404,10 +413,11 @@ const NewStudent = () => {
                                 </MenuItem>
                               ))}
                             </Select>
+                            {errors.time && touched.time && <Typography variant='body1' color='red'>{errors.time}</Typography>}
                           </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} md={3}>
+                        <Grid item xs={12} md={3} sx={{ mb: 3}}>
                           <ButtonGroup size='large' fullWidth sx={{ minHeight: '100%' }}>
                             {DAYS.map(element => (
                               <Button
@@ -424,6 +434,7 @@ const NewStudent = () => {
                               </Button>
                             ))}
                           </ButtonGroup>
+                          {errors.days && touched.days && <Typography variant='body1' color='red'>{errors.days}</Typography>}
                         </Grid>
 
                         <Grid item xs={12} md={1}>
@@ -503,6 +514,7 @@ const NewStudent = () => {
         title={modalState.title}
         description={modalState.description}
         handleClose={handleCloseModal}
+        success={modalState.success}
       />
     </>
   )

@@ -29,4 +29,5 @@ export type ModalState = {
   isOpen: boolean;
   title: string;
   description: string;
+  success?: boolean;
 };

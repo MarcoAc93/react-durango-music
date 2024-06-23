@@ -31,20 +31,17 @@ type Props = {
   handleClose?: () => void;
   title?: string;
   description?: string
-  error?: {
-    title: string;
-    description: string;
-  }
+  success?: boolean;
 }
 
-const Modal = ({ open = false, handleClose, title, description, error }: Props) => (
+const Modal = ({ open = false, handleClose, title, description, success = true }: Props) => (
   <BootstrapDialog
     onClose={handleClose}
     aria-labelledby="customized-dialog-title"
     open={open}
   >
     <DialogTitleStyled sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-      {error ? <ErrorIcon /> : <CheckCircleIcon />}{title}
+      {success ? <CheckCircleIcon /> : <ErrorIcon />}{title}
     </DialogTitleStyled>
     <IconButton
       aria-label="close"

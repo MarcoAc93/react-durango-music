@@ -1,12 +1,20 @@
 import React, { useMemo } from 'react'
-import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowParams, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import { useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 
 import { PageLoader, Error, Title } from '../../components';
 import { GET_STUDENTS } from '../../queries';
 import { Container, ControlContainer } from './styles';
+
+const QuickSearchToolbar = () => {
+  return (
+    <Box sx={{ display: 'flex', mt: 2, ml: 2 }}>
+      <GridToolbarQuickFilter />
+    </Box>
+  );
+}
 
 const Students = () => {
   const authorization = localStorage.getItem('token');
@@ -48,7 +56,6 @@ const Students = () => {
       <Title>Alumnos</Title>
       <ControlContainer>
         <Button variant='contained' onClick={handleAdd}>Agregar</Button>
-        <Button variant='contained' color='warning'>Editar</Button>
         <Button variant='contained' color='secondary'>Eliminar</Button>
       </ControlContainer>
       {error ? (
@@ -65,6 +72,12 @@ const Students = () => {
           }}
           pageSizeOptions={[15]}
           checkboxSelection
+          slots={{ toolbar: QuickSearchToolbar }}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+            },
+          }}
         />
       )}
     </Container>
