@@ -1,6 +1,6 @@
 import { styled } from '@mui/system';
-import { Link } from 'react-router-dom';
-import { ListItem, ListItemIcon } from '@mui/material';
+import { Link, useLocation } from 'react-router-dom';
+import { ListItem, ListItemButton, ListItemIcon, List } from '@mui/material';
 import StudentsIcon from '@mui/icons-material/Person';
 import GroupsIcon from '@mui/icons-material/Groups';
 import CoursesIcon from '@mui/icons-material/GridView';
@@ -11,22 +11,22 @@ const drawerWidth = 150;
 const MenuArray = [
   {
     text: 'Alumnos',
-    Component: <StudentsIcon />,
-    url: ''
+    Component: <StudentsIcon fontSize='large' color='primary' />,
+    url: '/dashboard'
   },
   {
     text: 'Grupos',
-    Component: <GroupsIcon />,
+    Component: <GroupsIcon fontSize='large' color='primary' />,
     url: '/dashboard/grupos'
   },
   {
     text: 'Cursos',
-    Component: <CoursesIcon />,
+    Component: <CoursesIcon fontSize='large' color='primary' />,
     url: '/dashboard/cursos'
   },
   {
     text: 'Pagos',
-    Component: <AttachMoneyIcon />,
+    Component: <AttachMoneyIcon fontSize='large' color='primary' />,
     url: '/dashboard/pagos'
   }
 ]
@@ -53,29 +53,33 @@ const DrawerContent = styled('div')({
   marginTop: 60
 });
 
-const ListStyled = styled('ul')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-  padding: '0 8px'
-});
-
+const StyledLink = styled(Link)((({ theme }) => ({
+  textDecoration: 'none',
+  fontSize: 18,
+  [theme.breakpoints.up('md')]: {
+    fontSize: 24,
+  }
+})));
 
 const CustomDrawer = ({ open }: { open?: boolean }) => {
+  const location = useLocation();
+
   return (
     <DrawerContainer open={open}>
       <DrawerContent>
         <nav>
-          <ListStyled>
+          <List>
             {MenuArray.map(element => (
               <ListItem disablePadding key={element.text}>
-                <ListItemIcon>
-                  {element.Component}
-                </ListItemIcon>
-                <Link to={element.url}>{element.text}</Link>
+                <ListItemButton selected={element.url === location.pathname}>
+                  <ListItemIcon>
+                    {element.Component}
+                  </ListItemIcon>
+                  <StyledLink to={element.url}>{element.text}</StyledLink>
+                </ListItemButton>
               </ListItem>
             ))}
-          </ListStyled>
+          </List>
         </nav>
       </DrawerContent>
     </DrawerContainer>

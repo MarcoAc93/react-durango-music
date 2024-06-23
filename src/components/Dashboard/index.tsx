@@ -7,7 +7,6 @@ import { DashboardContainer, Header, MainContent, MenuButton, Title} from './sty
 import { AUTHORIZATION } from "../../queries";
 import CustomDrawer from "./Drawer";
 
-
 const Dashboard = () => {
   const token = localStorage.getItem('token');
   const navigation = useNavigate();

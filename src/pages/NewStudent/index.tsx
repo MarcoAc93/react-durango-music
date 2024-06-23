@@ -454,6 +454,7 @@ const NewStudent = () => {
                               />
                             ))}
                           </ChipContainer>
+                          <Divider />
                         </Grid>
                         <ErrorMessage name="courses">
                           {msg => <Typography variant='body1' color='red'>{msg}</Typography>}
@@ -461,7 +462,6 @@ const NewStudent = () => {
                       </Grid>
                     )}
                   </FieldArray>
-                  <Divider sx={{ margin: '8px 0px' }} />
                 </div>
 
                 <div>
