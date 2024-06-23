@@ -18,7 +18,7 @@ export const Header = styled('header', { shouldForwardProp: (prop) => prop !== '
   color: 'white',
   paddingLeft: open ? drawerWidth + 10 : 16,
   transition: 'padding-left 0.3s ease',
-  height: '64px',
+  minHeight: '64px',
   boxSizing: 'border-box',
   [theme.breakpoints.up('md')]: {
     paddingLeft: open ? `${drawerWidth * 2 + 10}px` : 0,
