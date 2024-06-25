@@ -94,7 +94,7 @@ const NewStudent = () => {
 
   const addCourse = (values: FormValuesEnrollment, push: any) => {
     if (values.course && values.profesor && values.time && values.days?.length > 0) {
-      push({ ...values });
+      push({ time: values.time, profesor: values.profesor, name: values.course, days: values.days });
     }
   };
 
@@ -166,6 +166,7 @@ const NewStudent = () => {
       setModalState({ isOpen: true, title: 'Primero registra alumno', description: 'Primero debes de registrar la informacion del alumno para poderlo inscribir a algun curso', success: false })
       return;
     }
+
     enrollStudentMutation({
         variables: {
           input: {
@@ -350,6 +351,7 @@ const NewStudent = () => {
         <Formik initialValues={initialValuesEnrollment} validationSchema={validatonSchemaEnrollment} onSubmit={onSubmitEnrollStudent}>
           {({ values, handleChange, handleBlur, setFieldValue, errors, touched }) => (
             <Form>
+              <>{console.log(values)}</>
               <ContainerPage>
                 <div>
                   <Typography variant='h5' sx={{ marginBottom: 1 }}>Seleccionar curso</Typography>
