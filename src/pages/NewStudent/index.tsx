@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, ButtonGroup, InputLabel, Chip, Grid, useMediaQuery } from '@mui/material';
+import { TextField, Typography, Divider, Select, MenuItem, Button, FormControl, ButtonGroup, InputLabel, Chip, Grid, useMediaQuery, Paper } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -10,7 +10,7 @@ import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { Title, Modal, PageLoader, Error } from '../../components';
-import { ChipContainer, ContainerPage, HeaderWrapper } from './styles';
+import { ChipContainer, ContainerPage, HeaderWrapper, StyledPaper } from './styles';
 import { Course, FormValuesEnrollment, FormValuesStudentInfo, ModalState } from './types'
 import { COURSES, DAYS, PROFESORS, TIMES, daysToSpanish, PERIODS } from './constants';
 import { CREATE_STUDENT, ENROLL_STUDENT, GET_STUDENT, UPDATE_STUDENT } from '../../queries';
@@ -325,6 +325,18 @@ const NewStudent = () => {
                   </Grid>
                 </Grid>
               </div>
+
+              {studentData?.getStudent?.deregister && (
+                <Grid container columns={12}>
+                  <Grid item>
+                    <StyledPaper>
+                      Alumno dado de baja
+                      <Typography>Fecha: {new Date(studentData?.getStudent?.deregister?.date).toLocaleDateString()}</Typography>
+                      <Typography>Motivo: {studentData?.getStudent?.deregister?.reason}</Typography>
+                    </StyledPaper>
+                  </Grid>
+                </Grid>
+              )}
 
               <Grid container columns={12} flexDirection={!isMobile ? 'row': 'column'} gap={2} justifyContent={!isMobile ? 'flex-end': 'center'}>
                 <Grid item xs={12} md={3}>

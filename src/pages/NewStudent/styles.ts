@@ -1,4 +1,4 @@
-import { styled } from "@mui/material";
+import { Paper, styled } from "@mui/material";
 
 export const ContainerPage = styled('div')({
   height: '100%',
@@ -19,3 +19,9 @@ export const ChipContainer = styled('div')({
   marginTop: 8,
   gap: 8
 });
+
+export const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: 8,
+  background: theme.palette.error.light,
+  color: 'white'
+}));

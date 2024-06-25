@@ -59,6 +59,10 @@ export const GET_STUDENT = gql`
         cellphone
         name
       }
+      deregister {
+        date
+        reason
+      }
     }
   }
 `;
