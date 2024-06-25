@@ -1,20 +1,13 @@
 import { useMemo, useState } from 'react'
-import { DataGrid, GridColDef, GridRowClassNameParams, GridRowId, GridRowParams, GridRowSelectionModel, GridToolbarQuickFilter } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId, GridRowParams, GridRowSelectionModel, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import { useMutation, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { Box, Button } from '@mui/material';
 
 import { PageLoader, Error, Title, DeleteStudentModal, Modal as ConfirmationModal } from '../../components';
 import { DELETE_STUDENT, GET_STUDENTS } from '../../queries';
 import { Container, ControlContainer } from './styles';
 import { ModalState } from '../NewStudent/types';
-
-const useStyles = makeStyles<Theme>(({ palette }) => ({
-  desactivated: {
-    backgroundColor: palette.error.light,
-  },
-}));
 
 const QuickSearchToolbar = () => {
   return (
@@ -37,8 +30,6 @@ const Students = () => {
   const [studentIdSelected, setStudentIdSelected] = useState<GridRowId>();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [modalState, setModalState] = useState<ModalState>({ title: '', description: '', isOpen: false, success: false });
-
-  const classes = useStyles();
 
   const columns = useMemo(() => {
     const columnsData: GridColDef[] = [
@@ -68,10 +59,6 @@ const Students = () => {
     ];
     return columnsData
   }, []);
-
-  const getRowClassName = (params: GridRowClassNameParams) => {
-    return !params.row.active ? classes.desactivated : '';
-  };
 
   const handleAdd = () => navigate('/dashboard/nuevo-alumno');
   const onRowClick = (params: GridRowParams) => navigate(`/dashboard/editar-alumno/${params.id}`);
@@ -121,7 +108,6 @@ const Students = () => {
           columns={columns}
           onRowClick={onRowClick}
           onRowSelectionModelChange={onRowSelectionModelChange}
-          getRowClassName={getRowClassName}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 15 },
