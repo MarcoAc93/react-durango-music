@@ -4,6 +4,8 @@ import PageLoader from "./Loader";
 import Title from "./Title";
 import Modal from "./Modal";
 import DeleteStudentModal from "./Modal/DeleteStudent";
+import EnrollStudent from "./Modal/EnrollStudent";
+import EnrollmentForm from "./EnrollmentForm";
 
 export {
   Dashboard,
@@ -11,5 +13,7 @@ export {
   PageLoader,
   Title,
   Modal,
-  DeleteStudentModal
+  DeleteStudentModal,
+  EnrollStudent,
+  EnrollmentForm,
 }

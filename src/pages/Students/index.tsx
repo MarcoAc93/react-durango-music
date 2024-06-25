@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
 
-import { PageLoader, Error, Title, DeleteStudentModal, Modal as ConfirmationModal } from '../../components';
+import { PageLoader, Error, Title, DeleteStudentModal, Modal as ConfirmationModal, EnrollStudent } from '../../components';
 import { DELETE_STUDENT, GET_STUDENTS } from '../../queries';
 import { Container, ControlContainer } from './styles';
 import { ModalState } from '../NewStudent/types';
@@ -30,6 +30,7 @@ const Students = () => {
   const [studentIdSelected, setStudentIdSelected] = useState<GridRowId>();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [modalState, setModalState] = useState<ModalState>({ title: '', description: '', isOpen: false, success: false });
+  const [openEnrollment, setOpenEnrollment] = useState<boolean>();
 
   const columns = useMemo(() => {
     const columnsData: GridColDef[] = [
@@ -74,6 +75,7 @@ const Students = () => {
 
   const onDeleteBtn = () => setOpenModal(true);
   const onCloseModal = () => setOpenModal(false);
+  const handleOpenEnrollment = () => setOpenEnrollment(false);
 
   const onOkBtn = (reason: string) => {
     deleteStudentMutation({
@@ -97,6 +99,7 @@ const Students = () => {
       <Title>Alumnos</Title>
       <ControlContainer>
         <Button variant='contained' onClick={handleAdd}>Agregar</Button>
+        <Button variant='contained' color='success' onClick={() => setOpenEnrollment(true)} disabled={!studentIdSelected}>Inscribir</Button>
         <Button variant='contained' color='secondary' onClick={onDeleteBtn} disabled={!studentIdSelected}>Eliminar</Button>
       </ControlContainer>
       {error ? (
@@ -134,6 +137,11 @@ const Students = () => {
         title={modalState.title}
         description={modalState.description}
         handleClose={() => setModalState({ description: '', isOpen: false, title: '', success: false })}
+      />
+      <EnrollStudent
+        isOpen={openEnrollment}
+        onClose={handleOpenEnrollment}
+        studentId={studentIdSelected as string}
       />
     </Container>
   )

@@ -17,6 +17,7 @@ export const ChipContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   marginTop: 8,
+  marginBottom: 8,
   gap: 8
 });
 
