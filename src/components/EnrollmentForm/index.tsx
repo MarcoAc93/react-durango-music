@@ -1,8 +1,10 @@
+import { useRef, useState } from 'react';
 import { AlertColor, Button, ButtonGroup, Chip, DialogActions, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
 import { FieldArray, Formik, Form, FormikHelpers } from 'formik';
 import { AddBoxRounded } from '@mui/icons-material';
 import * as Yup from 'yup';
 import { LoadingButton } from '@mui/lab';
+import { useReactToPrint } from 'react-to-print';
 
 import { COURSES, DAYS, PERIODS, PROFESORS, TIMES, daysToSpanish } from '../../pages/NewStudent/constants';
 import { ChipContainer } from '../../pages/NewStudent/styles';
@@ -11,7 +13,7 @@ import { Course, FormValuesEnrollment } from '../../pages/NewStudent/types';
 import { useMutation } from '@apollo/client';
 import { ENROLL_STUDENT } from '../../queries';
 import Toast from '../Toast';
-import { useState } from 'react';
+import Ticket, { TicketInfo } from '../Ticket';
 
 const validatonSchemaEnrollment = Yup.object().shape({
   course: Yup.string().required('Selecciona el curso'),
@@ -41,6 +43,11 @@ const EnrollmentForm = ({ studentId }: Props) => {
   const isMobile = useMediaQuery('sm');
   const authorization = localStorage.getItem('token');
   const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '', type: undefined });
+  const [ticket, setTicket] = useState({ total: 0, ticketInfo: [] as TicketInfo[], print: false });
+  const ticketRef = useRef<any>();
+  const handlePrint = useReactToPrint({
+    content: () => ticketRef.current
+  })
   const [enrollStudentMutation, { loading }] = useMutation(ENROLL_STUDENT, {
     context: { headers: { authorization } },
   });
@@ -62,8 +69,30 @@ const EnrollmentForm = ({ studentId }: Props) => {
         },
         onCompleted(data) {
           if (data?.enrollStudent?.success) {
-            resetForm();
             setToastState({ open: true, message: "Alumno inscrito correctamente", type: 'success' });
+            const ticketInfo = [
+              {
+                quantity: 1,
+                concept: 'Inscripcion',
+                price: Number(values.amount),
+                net: 1 * Number(values.amount)
+              }
+            ];
+            if (values.firstMonthlyPayment) {
+              const firstMonthlyPayment = {
+                quantity: 1,
+                concept: 'Primer mes',
+                price: Number(values.firstMonthlyPayment),
+                net: 1 * Number(values.firstMonthlyPayment)
+              }
+              ticketInfo.push(firstMonthlyPayment);
+            }
+            let total = 0;
+            ticketInfo.forEach(element => {
+              total = total + element.net;
+            });
+            setTicket({ ticketInfo, total, print: true });
+            resetForm();
           }
         },
         onError(error) {
@@ -248,8 +277,14 @@ const EnrollmentForm = ({ studentId }: Props) => {
             <LoadingButton autoFocus variant='contained' color='primary' type='submit' loading={loading} disabled={!isValid}>
               Inscribir
             </LoadingButton>
+            <Button variant='contained' color='info' onClick={handlePrint} disabled={!ticket.print}>
+              imprimir ticket
+            </Button>
           </DialogActions>
-          <Toast open={toastState.open} message={toastState.message} type={toastState.type} onClose={handleClose} />
+            <Toast open={toastState.open} message={toastState.message} type={toastState.type} onClose={handleClose} />
+          <div style={{ display: 'none' }}>
+            <Ticket total={ticket.total} ticketInfo={ticket.ticketInfo} ref={ticketRef}/>
+          </div>
         </Form>
       )}
     </Formik>
