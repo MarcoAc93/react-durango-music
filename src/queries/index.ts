@@ -20,26 +20,34 @@ export const AUTHORIZATION = gql`
 `;
 
 export const GET_STUDENTS = gql`
-  query GetStudents {
+  query Query {
     getStudents {
       code
       message
       success
       students {
+        id
+        active
         age
         cellphone
         email
-        id
         lastName
         name
         tutor {
           cellphone
           name
         }
-        active
-        deregister {
-          date
-          reason
+        enrollments {
+          payed
+          active
+          courses {
+            days
+            name
+            profesor
+            time
+          }
+          period
+          scholarship
         }
       }
     }

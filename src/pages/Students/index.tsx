@@ -51,6 +51,16 @@ const Students = () => {
         width: 125,
       },
       {
+        field: 'enrollments',
+        headerName: 'Inscrito/Periodo',
+        type: 'string',
+        width: 160,
+        valueFormatter: (enrollments) => {
+          // @ts-ignore
+          return enrollments.length > 0 ? enrollments[0].period : 'No inscrito';
+        }
+      },
+      {
         field: 'active',
         headerName: 'Activo',
         type: 'string',
