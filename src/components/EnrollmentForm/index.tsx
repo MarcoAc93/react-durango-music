@@ -28,6 +28,7 @@ const initialValuesEnrollment: FormValuesEnrollment = {
   courses: [] as unknown as [Course],
   period: '',
   amount: '',
+  firstMonthlyPayment: '',
 };
 
 type Props = {
@@ -44,18 +45,17 @@ const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
   });
 
   const onSubmitEnrollStudent = (values: FormValuesEnrollment, { resetForm }: FormikHelpers<FormValuesEnrollment>) => {
-    console.log(!studentId);
     // @ts-ignore
     values.courses.forEach(course => { course.days = course.days.map(day => daysToSpanish[day]) });
     if (!studentId) return;
-
     enrollStudentMutation({
         variables: {
           input: {
-            amount: Number(values.amount),
-            payed: !values.amount ? false : true,
-            period: values.period,
             studentId: studentId,
+            period: values.period,
+            amount: Number(values.amount),
+            firstMonthlyPayment: Number(values.firstMonthlyPayment),
+            scholarship: 0,
             courses: values.courses
           },
         },
@@ -217,6 +217,18 @@ const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.amount}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <TextField
+                  label='Primera mensualidad?'
+                  fullWidth
+                  name='firstMonthlyPayment'
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.firstMonthlyPayment}
                 />
               </FormControl>
             </Grid>

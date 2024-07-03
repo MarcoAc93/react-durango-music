@@ -23,6 +23,7 @@ export type FormValuesEnrollment = {
   courses: [Course];
   period: string
   amount?: string;
+  firstMonthlyPayment?: string;
 };
 
 export type ModalState = {

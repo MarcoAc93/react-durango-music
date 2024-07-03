@@ -102,24 +102,25 @@ export const DELETE_STUDENT = gql`
 `;
 
 export const ENROLL_STUDENT = gql`
-  mutation EnrollStudent($input: EnrollStudentInput!) {
+  mutation Mutation($input: EnrollStudentInput!) {
     enrollStudent(input: $input) {
       code
       message
       success
       enrollment {
         id
+        studentId
         payed
         period
-        scholarship
-        studentId
-        amount
         courses {
-          time
-          profesor
-          name
           days
+          name
+          profesor
+          time
         }
+        scholarship
+        active
+        createdAt
       }
     }
   }
