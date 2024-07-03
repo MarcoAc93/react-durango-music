@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TextField, Typography, Divider, Button, FormControl, Grid, useMediaQuery } from '@mui/material';
+import { TextField, Typography, Divider, Button, FormControl, Grid, useMediaQuery, AlertColor } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -7,9 +7,9 @@ import { Formik, Form, FormikHelpers } from 'formik';
 import { useMutation, useQuery } from '@apollo/client';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
-import { Title, Modal, PageLoader, Error, EnrollmentForm } from '../../components';
+import { Title, PageLoader, Error, EnrollmentForm, Toast } from '../../components';
 import { ContainerPage, HeaderWrapper, StyledPaper } from './styles';
-import { FormValuesStudentInfo, ModalState } from './types'
+import { FormValuesStudentInfo } from './types'
 import { CREATE_STUDENT, GET_STUDENT, UPDATE_STUDENT } from '../../queries';
 
 const validationSchemaStudentInfo = Yup.object().shape({
@@ -53,18 +53,21 @@ const NewStudent = () => {
     context: { headers: { authorization } },
   });
 
-  const [modalState, setModalState] = useState<ModalState>({ isOpen: false, title: '', description: '' });
+  const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '', type: undefined });
   const [newStudentId, setNewStudentId] = useState<string>();
   const [editStudent, setEditStudent] = useState<boolean>(!!studentId ?? false);
 
   const handleGoBack = () => navigate('/dashboard');
   const toggleEdit = () => setEditStudent(currentState => !currentState);
-  const handleCloseModal = () => {
-    setModalState({ isOpen: false, description: '', title: '' });
-    if (studentId && studentData.getStudent.id) toggleEdit();
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setToastState({ open: false, message: '', type: undefined });
   };
 
-  const onError = (error: any) => setModalState({ isOpen: true, title: 'Hubo un error...', description: error?.message, success: false });
+  const onError = (error: any) => setToastState({ open: true, message: error.message, type: 'error' });
 
   const createNewStudent = (values: FormValuesStudentInfo, resetForm?: any) => {
     createStudentMutation({
@@ -83,7 +86,7 @@ const NewStudent = () => {
       },
       onCompleted: (response) => {
         if (response.createStudent.success) {
-          setModalState({ isOpen: true, description: 'El alumno a sido registrado correctamente', title: 'Alumno agregado', success: true });
+          setToastState({ open: true, message: "Alumno creado correctamente", type: 'success' });
           setNewStudentId(response.createStudent.student.id);
           resetForm();
         }
@@ -111,7 +114,8 @@ const NewStudent = () => {
       onError,
       onCompleted: (response) => {
         if (response.editStudent) {
-          setModalState({ isOpen: true, title: 'Información actualizada', description: 'La información del alumno a sido actualizada correctamente', success: true });
+          // setModalState({ isOpen: true, title: 'Información actualizada', description: 'La información del alumno a sido actualizada correctamente', success: true });
+          setToastState({ open: true, message: 'La información del alumno a sido actualizada correctamente', type: 'success' });
         }
       }
     })
@@ -299,13 +303,14 @@ const NewStudent = () => {
       {!studentId && (
         <EnrollmentForm studentId={newStudentId as string} onCancelBtn={() => {}} onSuccessBtn={() => {}} />
       )}
-      <Modal
+      {/* <Modal
         open={modalState.isOpen}
         title={modalState.title}
         description={modalState.description}
         handleClose={handleCloseModal}
         success={modalState.success}
-      />
+      /> */}
+      <Toast open={toastState.open} message={toastState.message} type={toastState.type} onClose={handleClose} />
     </>
   )
 };

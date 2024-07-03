@@ -6,6 +6,7 @@ import Modal from "./Modal";
 import DeleteStudentModal from "./Modal/DeleteStudent";
 import EnrollStudent from "./Modal/EnrollStudent";
 import EnrollmentForm from "./EnrollmentForm";
+import Toast from "./Toast";
 
 export {
   Dashboard,
@@ -16,4 +17,5 @@ export {
   DeleteStudentModal,
   EnrollStudent,
   EnrollmentForm,
+  Toast,
 }

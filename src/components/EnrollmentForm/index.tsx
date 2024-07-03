@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Chip, DialogActions, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
+import { AlertColor, Button, ButtonGroup, Chip, DialogActions, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
 import { FieldArray, Formik, Form, FormikHelpers } from 'formik';
 import { AddBoxRounded, CheckCircle } from '@mui/icons-material';
 import * as Yup from 'yup';
@@ -10,6 +10,8 @@ import { generateCourseString } from '../../utils';
 import { Course, FormValuesEnrollment } from '../../pages/NewStudent/types';
 import { useMutation } from '@apollo/client';
 import { ENROLL_STUDENT } from '../../queries';
+import Toast from '../Toast';
+import { useState } from 'react';
 
 const validatonSchemaEnrollment = Yup.object().shape({
   course: Yup.string().required('Selecciona el curso'),
@@ -40,6 +42,7 @@ type Props = {
 const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
   const isMobile = useMediaQuery('sm');
   const authorization = localStorage.getItem('token');
+  const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '', type: undefined });
   const [enrollStudentMutation, { loading, data }] = useMutation(ENROLL_STUDENT, {
     context: { headers: { authorization } },
   });
@@ -62,11 +65,11 @@ const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
         onCompleted(data) {
           if (data?.enrollStudent?.success) {
             resetForm();
-            onSuccessBtn();
+            setToastState({ open: true, message: "Alumno inscrito correctamente", type: 'success' });
           }
         },
         onError(error) {
-          console.log(error);
+          setToastState({ open: true, message: error.message, type: 'error' });
         }
       });
   };
@@ -75,6 +78,13 @@ const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
     if (values.course && values.profesor && values.time && values.days?.length > 0) {
       push({ time: values.time, profesor: values.profesor, name: values.course, days: values.days });
     }
+  };
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setToastState({ open: false, message: '', type: undefined });
   };
 
   return (
@@ -232,14 +242,6 @@ const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
                 />
               </FormControl>
             </Grid>
-            {data?.enrollStudent?.success && (
-              <Grid item xs={12} md={4} container alignItems='center'>
-                <Typography variant='body1' fontWeight='bold' sx={(props) => ({ color: props.palette.primary.dark, mr: 1 })}>
-                  Alumno inscrito correctamente
-                </Typography>
-                <CheckCircle color='primary' />
-              </Grid>
-            )}
           </Grid>
           <DialogActions>
             <Button variant='contained' color='secondary' onClick={onCancelBtn}>
@@ -249,6 +251,7 @@ const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
               Inscribir
             </LoadingButton>
           </DialogActions>
+          <Toast open={toastState.open} message={toastState.message} type={toastState.type} onClose={handleClose} />
         </Form>
       )}
     </Formik>
