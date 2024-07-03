@@ -1,6 +1,6 @@
 import { AlertColor, Button, ButtonGroup, Chip, DialogActions, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
 import { FieldArray, Formik, Form, FormikHelpers } from 'formik';
-import { AddBoxRounded, CheckCircle } from '@mui/icons-material';
+import { AddBoxRounded } from '@mui/icons-material';
 import * as Yup from 'yup';
 import { LoadingButton } from '@mui/lab';
 
@@ -35,15 +35,13 @@ const initialValuesEnrollment: FormValuesEnrollment = {
 
 type Props = {
   studentId: string;
-  onCancelBtn: () => void;
-  onSuccessBtn: () => void;
 }
 
-const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
+const EnrollmentForm = ({ studentId }: Props) => {
   const isMobile = useMediaQuery('sm');
   const authorization = localStorage.getItem('token');
   const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '', type: undefined });
-  const [enrollStudentMutation, { loading, data }] = useMutation(ENROLL_STUDENT, {
+  const [enrollStudentMutation, { loading }] = useMutation(ENROLL_STUDENT, {
     context: { headers: { authorization } },
   });
 
@@ -244,7 +242,7 @@ const EnrollmentForm = ({ studentId, onCancelBtn, onSuccessBtn }: Props) => {
             </Grid>
           </Grid>
           <DialogActions>
-            <Button variant='contained' color='secondary' onClick={onCancelBtn}>
+            <Button variant='contained' color='secondary'>
               Cancelar
             </Button>
             <LoadingButton autoFocus variant='contained' color='primary' type='submit' loading={loading} disabled={!isValid}>
