@@ -20,7 +20,7 @@ export const AUTHORIZATION = gql`
 `;
 
 export const GET_STUDENTS = gql`
-  query Query {
+  query GetStudents {
     getStudents {
       code
       message

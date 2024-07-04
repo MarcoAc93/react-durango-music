@@ -49,6 +49,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
     content: () => ticketRef.current
   })
   const [enrollStudentMutation, { loading }] = useMutation(ENROLL_STUDENT, {
+    refetchQueries: ['GetStudents'],
     context: { headers: { authorization } },
   });
 
@@ -112,6 +113,35 @@ const EnrollmentForm = ({ studentId }: Props) => {
       return;
     }
     setToastState({ open: false, message: '', type: undefined });
+  };
+
+  const handleDayClick = (selectedDay: string, values: FormValuesEnrollment, setFieldValue: (field: string, value: any, shouldValidate?: boolean | undefined) => void) => {
+    const group1 = ['monday', 'tuesday', 'wednesday'];
+    const group2 = ['thursday', 'friday'];
+    const group3 = ['saturday'];
+  
+    let newDays = [...values.days];
+  
+    if (group1.includes(selectedDay)) {
+      if (group1.some(day => newDays.includes(day))) {
+        newDays = newDays.filter(day => !group1.includes(day));
+      } else {
+        newDays = [...newDays, ...group1];
+      }
+    } else if (group2.includes(selectedDay)) {
+      if (group2.some(day => newDays.includes(day))) {
+        newDays = newDays.filter(day => !group2.includes(day));
+      } else {
+        newDays = [...newDays, ...group2];
+      }
+    } else if (group3.includes(selectedDay)) {
+      if (group3.some(day => newDays.includes(day))) {
+        newDays = newDays.filter(day => !group3.includes(day));
+      } else {
+        newDays = [...newDays, ...group3];
+      }
+    }
+    setFieldValue('days', newDays);
   };
 
   return (
@@ -188,12 +218,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
                     {DAYS.map(element => (
                       <Button
                         key={element.value}
-                        onClick={() => {
-                          const newDays = values.days.includes(element.value)
-                            ? values.days.filter(day => day !== element.value)
-                            : [...values.days, element.value];
-                          setFieldValue('days', newDays);
-                        }}
+                        onClick={() => handleDayClick(element.value, values, setFieldValue)}
                         variant={values.days.includes(element.value) ? 'contained' : 'outlined'}
                       >
                         {element.display}
