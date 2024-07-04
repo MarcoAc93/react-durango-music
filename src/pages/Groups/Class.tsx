@@ -4,10 +4,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { Title, PageLoader, Error } from '../../components';
-import { DAYS, TIMES } from '../NewStudent/constants';
+import { DAYS, PROFESORS } from '../NewStudent/constants';
 
 import { GET_STUDENTS_BY_CLASSES } from '../../queries';
 import { capitalizeFirstLetter } from '../../utils';
+import { useState } from 'react';
 
 const Groups = () => {
   const isMobile = useMediaQuery<Theme>(({ breakpoints }) => breakpoints.down('md'))
@@ -15,8 +16,10 @@ const Groups = () => {
   const navigate = useNavigate();
   const params = useParams();
   const className = capitalizeFirstLetter(params.className!);
+  const [profesor, setProfesor] = useState('Eliut');
+
   const { data, loading, error } = useQuery(GET_STUDENTS_BY_CLASSES, {
-    variables: { className },
+    variables: { className, profesor },
     context: { headers: { authorization } }
   });
 
@@ -33,21 +36,21 @@ const Groups = () => {
           <ChevronLeftIcon fontSize='large' onClick={handleGoBack} />
         </Grid>
         <Grid item>
-          <Title variant='h2' noWrap>Grupos {className}</Title>
+          <Title variant='h2' noWrap>Grupos de {className}</Title>
         </Grid>
       </Grid>
       <Grid container columns={12} gap={2}>
         <Grid item xs={12} md={2}>
           <FormControl fullWidth>
-            <InputLabel id="time-input-label">Horario</InputLabel>
+            <InputLabel id="teacher-input-label">Maestro</InputLabel>
             <Select
-              labelId="time-input-label"
-              id="time-select"
-              value=""
-              label="Horario"
-              onChange={() => {}}
+              labelId="teacher-input-label"
+              id="teacher-select"
+              value={profesor}
+              label="Maestro"
+              onChange={(event) => setProfesor(event.target.value)}
             >
-              {TIMES.map(time => (
+              {PROFESORS.map(time => (
                 <MenuItem value={time} key={time}>{time}</MenuItem>
               ))}
             </Select>

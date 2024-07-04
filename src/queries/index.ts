@@ -76,13 +76,14 @@ export const GET_STUDENT = gql`
 `;
 
 export const GET_STUDENTS_BY_CLASSES = gql`
-  query GetStudentsByClass($className: String!) {
-    getStudentsByClass(className: $className) {
+  query GetStudentsByClass($className: String!, $profesor: String!) {
+    getStudentsByClass(className: $className, profesor: $profesor) {
       code
       message
       success
       classes {
         course
+        profesor
         hour
         students {
           id

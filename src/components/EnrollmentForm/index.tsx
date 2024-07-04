@@ -48,7 +48,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
   const ticketRef = useRef<any>();
   const handlePrint = useReactToPrint({ content: () => ticketRef.current });
   const [enrollStudentMutation, { loading }] = useMutation(ENROLL_STUDENT, {
-    refetchQueries: ['GetStudents'],
+    refetchQueries: ['GetStudents', 'GetStudentsByClass'],
     context: { headers: { authorization } },
   });
 
