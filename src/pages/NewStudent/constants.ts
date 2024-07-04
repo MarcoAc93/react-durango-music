@@ -2,7 +2,8 @@ export const COURSES = [
   'Guitarra',
   'Canto',
   'Teclado',
-  'Violin'
+  'Violin',
+  'Bateria'
 ];
 
 export const PROFESORS = [
@@ -36,6 +37,12 @@ export const daysToSpanish = {
   thursday: 'Jueves',
   friday: 'Viernes',
   saturday: 'Sabado'
+};
+
+export const GROUP_DAYS = {
+  group1: ['monday', 'tuesday', 'wednesday'],
+  group2: ['thursday', 'friday'],
+  group3: ['saturday']
 };
 
 export const PERIODS = [

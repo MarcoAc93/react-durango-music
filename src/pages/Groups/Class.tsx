@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { Title, PageLoader, Error } from '../../components';
-import { DAYS, PROFESORS } from '../NewStudent/constants';
+import { DAYS, daysToSpanish, GROUP_DAYS, PROFESORS } from '../NewStudent/constants';
 
 import { GET_STUDENTS_BY_CLASSES } from '../../queries';
 import { capitalizeFirstLetter } from '../../utils';
@@ -17,13 +17,31 @@ const Groups = () => {
   const params = useParams();
   const className = capitalizeFirstLetter(params.className!);
   const [profesor, setProfesor] = useState('Eliut');
+  const [selectedDays, setSelectedDays] = useState(GROUP_DAYS.group1);
 
+  // @ts-ignore
+  const days = selectedDays.map(day => daysToSpanish[day])
   const { data, loading, error } = useQuery(GET_STUDENTS_BY_CLASSES, {
-    variables: { className, profesor },
+    variables: { className, profesor, days },
     context: { headers: { authorization } }
   });
 
   const handleGoBack = () => navigate('/dashboard/grupos');
+
+  const handleDayClick = (day: string) => {
+    let groupKey = 'group1';
+    if (GROUP_DAYS.group2.includes(day)) groupKey = 'group2';
+    else if (GROUP_DAYS.group3.includes(day)) groupKey = 'group3';
+
+    const otherGroupsKeys = Object.keys(GROUP_DAYS).filter(k => k !== groupKey);
+      let filteredDays = selectedDays;
+      otherGroupsKeys.forEach(k => {
+        // @ts-ignore
+        filteredDays = filteredDays.filter(d => !GROUP_DAYS[k].includes(d));
+      });
+      // @ts-ignore
+      setSelectedDays([...filteredDays, ...GROUP_DAYS[groupKey]]);
+  };
 
   if (loading || !data?.getStudentsByClass) <PageLoader />
   if (error) <Error description={error.message} />
@@ -50,8 +68,8 @@ const Groups = () => {
               label="Maestro"
               onChange={(event) => setProfesor(event.target.value)}
             >
-              {PROFESORS.map(time => (
-                <MenuItem value={time} key={time}>{time}</MenuItem>
+              {PROFESORS.map(profesor => (
+                <MenuItem value={profesor} key={profesor}>{profesor}</MenuItem>
               ))}
             </Select>
           </FormControl>
@@ -59,7 +77,7 @@ const Groups = () => {
         <Grid item xs={12} md={4}>
           <ButtonGroup size='large' fullWidth sx={{ minHeight: '100%' }}>
             {DAYS.map(element => (
-              <Button key={element.value} variant={'contained'}>
+              <Button key={element.value} variant={selectedDays.includes(element.value) ? 'contained' : 'outlined'} onClick={() => handleDayClick(element.value)}>
                 {element.display}
               </Button>
             ))}

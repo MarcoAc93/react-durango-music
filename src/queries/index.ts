@@ -76,8 +76,8 @@ export const GET_STUDENT = gql`
 `;
 
 export const GET_STUDENTS_BY_CLASSES = gql`
-  query GetStudentsByClass($className: String!, $profesor: String!) {
-    getStudentsByClass(className: $className, profesor: $profesor) {
+  query GetStudentsByClass($className: String!, $profesor: String!, $days: [String]) {
+    getStudentsByClass(className: $className, profesor: $profesor, days: $days) {
       code
       message
       success
