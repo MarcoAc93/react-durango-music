@@ -75,6 +75,25 @@ export const GET_STUDENT = gql`
   }
 `;
 
+export const GET_STUDENTS_BY_CLASSES = gql`
+  query GetStudentsByClass($className: String!) {
+    getStudentsByClass(className: $className) {
+      code
+      message
+      success
+      classes {
+        course
+        hour
+        students {
+          id
+          name
+          lastName
+        }
+      }
+    }
+  }
+`
+
 export const CREATE_STUDENT = gql`
   mutation CreateStudent($input: StudentInput!) {
     createStudent(input: $input) {
