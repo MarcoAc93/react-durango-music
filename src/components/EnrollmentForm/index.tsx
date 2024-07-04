@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AlertColor, Button, ButtonGroup, Chip, DialogActions, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography, useMediaQuery } from '@mui/material';
 import { FieldArray, Formik, Form, FormikHelpers } from 'formik';
 import { AddBoxRounded } from '@mui/icons-material';
@@ -6,9 +6,9 @@ import * as Yup from 'yup';
 import { LoadingButton } from '@mui/lab';
 import { useReactToPrint } from 'react-to-print';
 
-import { COURSES, DAYS, PERIODS, PROFESORS, TIMES, daysToSpanish } from '../../pages/NewStudent/constants';
+import { COURSES, DAYS, PROFESORS, TIMES, daysToSpanish } from '../../pages/NewStudent/constants';
 import { ChipContainer } from '../../pages/NewStudent/styles';
-import { generateCourseString } from '../../utils';
+import { generateCourseString, getPeriodsWithYear } from '../../utils';
 import { Course, FormValuesEnrollment } from '../../pages/NewStudent/types';
 import { useMutation } from '@apollo/client';
 import { ENROLL_STUDENT } from '../../queries';
@@ -44,14 +44,18 @@ const EnrollmentForm = ({ studentId }: Props) => {
   const authorization = localStorage.getItem('token');
   const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '', type: undefined });
   const [ticket, setTicket] = useState({ total: 0, ticketInfo: [] as TicketInfo[], print: false });
+  const [periods, setPeriods] = useState<string[]>([]);
   const ticketRef = useRef<any>();
-  const handlePrint = useReactToPrint({
-    content: () => ticketRef.current
-  })
+  const handlePrint = useReactToPrint({ content: () => ticketRef.current });
   const [enrollStudentMutation, { loading }] = useMutation(ENROLL_STUDENT, {
     refetchQueries: ['GetStudents'],
     context: { headers: { authorization } },
   });
+
+  useEffect(() => {
+    const periods = getPeriodsWithYear();
+    setPeriods(periods);
+  }, []);
 
   const onSubmitEnrollStudent = (values: FormValuesEnrollment, { resetForm }: FormikHelpers<FormValuesEnrollment>) => {
     // @ts-ignore
@@ -109,9 +113,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
   };
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+    if (reason === 'clickaway') return;
     setToastState({ open: false, message: '', type: undefined });
   };
 
@@ -263,7 +265,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                 >
-                  {PERIODS.map(element => (
+                  {periods.map(element => (
                     <MenuItem key={element} value={element}>{element}</MenuItem>
                   ))}
                 </Select>
