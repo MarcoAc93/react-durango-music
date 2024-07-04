@@ -1,6 +1,6 @@
 import Dashboard from "./Dashboard";
 import Error from "./Error";
-import PageLoader from "./Loader";
+import PageLoader from "./PageLoader";
 import Title from "./Title";
 import Modal from "./Modal";
 import DeleteStudentModal from "./Modal/DeleteStudent";

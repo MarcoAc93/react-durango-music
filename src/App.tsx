@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Students from './pages/Students';
 import NewStudent from './pages/NewStudent';
 import Groups from './pages/Groups';
+import Class from './pages/Groups/Class';
 import Payments from './pages/Payments';
 
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
           <Route path='/dashboard/nuevo-alumno' element={<NewStudent />} />
           <Route path='/dashboard/editar-alumno/:studentId' element={<NewStudent />} />
           <Route path='grupos' element={<Groups />} />
+          <Route path='grupos/:className' element={<Class />} />
           <Route path='pagos' element={<Payments />} />
         </Route>
       </Routes>

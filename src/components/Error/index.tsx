@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, styled } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
-import { PageContainerCentered } from '../Loader';
+import { PageContainerCentered } from '../PageLoader';
 
 const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
