@@ -1,35 +1,16 @@
 import { useState } from 'react';
-import { Button, styled, TextField, CircularProgress } from '@mui/material';
+import { Button, TextField, CircularProgress, Grid, Typography, FormControl, AlertColor } from '@mui/material';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 
+import { Toast } from '../../components';
 import { AUTH_USER, AUTHORIZATION } from '../../queries';
-
-const Root = styled('div')(({
-  display: 'flex',
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'column',
-  padding: '0px 16px',
-  maxWidth: 768
-}));
-
-const ContentContainer = styled('div')(({
-  textAlign: 'center'
-}));
-  
-const FormContainer = styled('div')(({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-  width: '75%'
-}));
 
 const Login = () => {
   const [authUser] = useLazyQuery(AUTH_USER);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [toastState, setToastState] = useState({ open: false, message: '', type: '' as AlertColor | undefined })
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
@@ -42,8 +23,10 @@ const Login = () => {
 
   const handleEmail = (event: any) => setEmail(event.target.value);
   const handlePassword = (event: any) => setPassword(event.target.value);
+  const onCloseToast = () => setToastState({ open: false, message: '', type: undefined });
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
     authUser({
       variables: {
         input: { email, password }
@@ -54,7 +37,7 @@ const Login = () => {
         navigate('/dashboard');
       },
       onError(error) {
-        console.log(error)
+        setToastState({ open: true, message: error.message, type: 'error' });
       },
     })
   };
@@ -62,17 +45,28 @@ const Login = () => {
   if (loading) return <CircularProgress />;
 
   return (
-    <Root>
-      <ContentContainer>
-        <h1>Durango Music</h1>
-        <h2>Iniciar sesion</h2>
-      </ContentContainer>
-      <FormContainer>
-        <TextField variant='outlined' size='small' placeholder='Email' fullWidth onChange={handleEmail} value={email} />
-        <TextField variant='outlined' size='small' placeholder='Contraseña' fullWidth onChange={handlePassword} value={password} type='password' />
-        <Button variant='contained' sx={{ ":last-child": { mt: 1 }}} onClick={handleSubmit}>Ingresar</Button>
-      </FormContainer>
-    </Root>
+    <form>
+      <Grid container columns={12} justifyContent="center" gap={3}>
+        <Grid item xs={12} textAlign="center">
+          <Typography variant='h3'>Escuela Durango Music</Typography>
+          <Typography variant='h5'>Iniciar sesion</Typography>
+        </Grid>
+        <Grid container columns={{ xs: 12, sm: 6 }} justifyContent="center" paddingInline={2}>
+          <Grid item gap={2}>
+            <FormControl fullWidth sx={{ mb: 1 }}>
+              <TextField variant='outlined' size='small' placeholder='Email' onChange={handleEmail} value={email} />
+            </FormControl>
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <TextField variant='outlined' size='small' placeholder='Contraseña' onChange={handlePassword} value={password} type='password' />
+            </FormControl>
+            <FormControl fullWidth>
+              <Button variant='contained' onClick={handleSubmit} type="submit">Ingresar</Button>
+            </FormControl>
+          </Grid>
+        </Grid>
+        <Toast open={toastState.open} message={toastState.message} type={toastState.type} onClose={onCloseToast} />
+      </Grid>
+    </form>
   );
 };
 
