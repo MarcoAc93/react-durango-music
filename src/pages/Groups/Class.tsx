@@ -23,6 +23,7 @@ const Groups = () => {
   const days = selectedDays.map(day => daysToSpanish[day])
   const { data, loading, error } = useQuery(GET_STUDENTS_BY_CLASSES, {
     variables: { className, profesor, days },
+    fetchPolicy: 'network-only',
     context: { headers: { authorization } }
   });
 
