@@ -122,7 +122,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
     const group2 = ['thursday', 'friday'];
     const group3 = ['saturday'];
   
-    let newDays = [...values.days];
+    let newDays: string[] = [];
   
     if (group1.includes(selectedDay)) {
       if (group1.some(day => newDays.includes(day))) {

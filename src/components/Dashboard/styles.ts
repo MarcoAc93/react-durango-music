@@ -16,7 +16,7 @@ export const Header = styled('header', { shouldForwardProp: (prop) => prop !== '
   alignItems: 'center',
   backgroundColor: theme.palette.primary.main,
   color: 'white',
-  paddingLeft: open ? drawerWidth + 10 : 16,
+  paddingLeft: open ? drawerWidth + 10 : 10,
   transition: 'padding-left 0.3s ease',
   minHeight: '64px',
   boxSizing: 'border-box',
