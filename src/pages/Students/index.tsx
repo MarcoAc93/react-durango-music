@@ -142,7 +142,7 @@ const Students = () => {
             (!filters.class || course.name === filters.class) &&
             (!filters.time || course.time === filters.time) &&
             // @ts-ignore
-            (course.days.some(day => filters.days.map(dayInEnglish => daysToSpanish[dayInEnglish]).includes(day)))
+            (filters.days.length === 0 || course.days.some(day => filters.days.map(dayInEnglish => daysToSpanish[dayInEnglish]).includes(day)))
           )
         )
       );
