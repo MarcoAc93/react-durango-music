@@ -8,6 +8,7 @@ import EnrollStudent from "./Modal/EnrollStudent";
 import EnrollmentForm from "./EnrollmentForm";
 import Toast from "./Toast";
 import Ticket from "./Ticket";
+import DrawerFilter from "./DrawerFilter";
 
 export {
   Dashboard,
@@ -20,4 +21,5 @@ export {
   EnrollmentForm,
   Toast,
   Ticket,
+  DrawerFilter
 }
