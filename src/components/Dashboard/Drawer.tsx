@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { ListItem, ListItemButton, ListItemIcon, List } from '@mui/material';
 import StudentsIcon from '@mui/icons-material/Person';
 import GroupsIcon from '@mui/icons-material/Groups';
-import CoursesIcon from '@mui/icons-material/GridView';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const drawerWidth = 150;
@@ -15,14 +14,9 @@ const MenuArray = [
     url: '/dashboard'
   },
   {
-    text: 'Grupos',
+    text: 'Asistencias',
     Component: <GroupsIcon fontSize='large' color='primary' />,
-    url: '/dashboard/grupos'
-  },
-  {
-    text: 'Cursos',
-    Component: <CoursesIcon fontSize='large' color='primary' />,
-    url: '/dashboard/cursos'
+    url: '/dashboard/asistencias'
   },
   {
     text: 'Pagos',
@@ -55,6 +49,7 @@ const DrawerContent = styled('div')({
 
 const StyledLink = styled(Link)((({ theme }) => ({
   textDecoration: 'none',
+  marginLeft: -15,
   fontSize: 18,
   [theme.breakpoints.up('md')]: {
     fontSize: 24,
