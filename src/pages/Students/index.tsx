@@ -13,7 +13,7 @@ import { daysToSpanish } from '../NewStudent/constants';
 
 type Filters = { profesor: string; class: string; time: string; days: string[] };
 
-const QuickSearchToolbar = () => {
+export const QuickSearchToolbar = () => {
   return (
     <Box sx={{ display: 'flex', mt: 2, ml: 2 }}>
       <GridToolbarQuickFilter />

@@ -75,20 +75,28 @@ export const GET_STUDENT = gql`
   }
 `;
 
-export const GET_STUDENTS_BY_CLASSES = gql`
-  query GetStudentsByClass($className: String!, $profesor: String!, $days: [String]) {
-    getStudentsByClass(className: $className, profesor: $profesor, days: $days) {
+export const GET_STUDENTS_BY_PROFESOR = gql`
+  query GetStudentsByProfesor($profesor: String) {
+    getStudentsByProfesor(profesor: $profesor) {
       code
       message
       success
-      classes {
-        course
-        profesor
-        hour
-        students {
+      students {
+        id
+        name
+        lastName
+        cellphone
+        enrollments {
           id
-          name
-          lastName
+          courses {
+            name
+            profesor
+          }
+        }
+        attendances {
+          _id
+          date
+          enrollmentId
         }
       }
     }
@@ -153,3 +161,9 @@ export const ENROLL_STUDENT = gql`
     }
   }
 `;
+
+export const CREATE_ATTENDANCE = gql`
+  mutation CreateAttendance($studentId: ID!, $enrollmentId: ID!, $date: String!) {
+    createAttendance(studentId: $studentId, enrollmentId: $enrollmentId, date: $date)
+  }
+`

@@ -1,12 +1,14 @@
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import moment from 'moment'
+import 'moment/locale/es';
 
 import { Dashboard } from "./components";
 import Login from "./pages/Login";
 import Students from './pages/Students';
 import NewStudent from './pages/NewStudent';
-import Groups from './pages/Groups';
-import Class from './pages/Groups/Class';
+import Groups from './pages/Attendance';
 import Payments from './pages/Payments';
+moment.locale('es', { week: { dow: 1 } });
 
 const App = () => {
   return (
@@ -17,8 +19,7 @@ const App = () => {
           <Route path='' element={<Students />} />
           <Route path='/dashboard/nuevo-alumno' element={<NewStudent />} />
           <Route path='/dashboard/editar-alumno/:studentId' element={<NewStudent />} />
-          <Route path='grupos' element={<Groups />} />
-          <Route path='grupos/:className' element={<Class />} />
+          <Route path='asistencias' element={<Groups />} />
           <Route path='pagos' element={<Payments />} />
         </Route>
       </Routes>
