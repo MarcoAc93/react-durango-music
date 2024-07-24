@@ -169,7 +169,7 @@ export const ENROLL_STUDENT = gql`
 `;
 
 export const CREATE_ATTENDANCE = gql`
-  mutation CreateAttendance($studentId: ID!, $enrollmentId: ID!, $date: String!) {
-    createAttendance(studentId: $studentId, enrollmentId: $enrollmentId, date: $date)
+  mutation CreateAttendance($input: CreateAttendanceInput!) {
+    createAttendance(input: $input)
   }
 `

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel, GridToolbarQuickFilter } from '@mui/x-data-grid';
+import { AlertColor, Box, Button, ButtonGroup, Checkbox, Dialog, DialogContent, DialogTitle, Grid } from '@mui/material';
 import { useMutation, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
-import { AlertColor, Box, Button, Checkbox, Grid } from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
 import moment from 'moment';
 
@@ -46,6 +46,7 @@ const Students = () => {
   });
   const [createAttendanceMutation] = useMutation(CREATE_ATTENDANCE, {
     refetchQueries: ['GetStudents'],
+    fetchPolicy: 'network-only',
     context: { headers: { authorization } },
   });
 
@@ -56,26 +57,43 @@ const Students = () => {
   const [filters, setFilters] = useState<Filters>({ profesor: '', class: '', time: '', days: [] });
   const [students, setStudents] = useState(data?.getStudents?.students || []);
   const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '' });
+  const [coursesModalState, setCoursesModalState] = useState<
+    { open: boolean, courses: string[], date: string, studentId: string, enrollmentId: string }
+  >({ open: false, courses: [], date: '', enrollmentId: '', studentId: '' });
 
-  const handleFilters = (type: string, value: string) => {
-    setFilters(currValue => ({ ...currValue, [type]: value }));
-  }
 
-  const onCheckBoxClick = (row: any, date: string) => {
-    const { id: studentId, enrollments } = row;
-    const [enrollment] = enrollments;
-    const { id: enrollmentId } = enrollment
+  const handleFilters = (type: string, value: string) => setFilters(currValue => ({ ...currValue, [type]: value }));
+
+  const createAttendance = ({ studentId, enrollmentId, date, course }: { studentId: string; enrollmentId: string; date: string; course: string }) => {
     createAttendanceMutation({
-      fetchPolicy: 'network-only',
-      variables: { studentId, enrollmentId, date },
+      variables: { input: { studentId, enrollmentId, date, course } },
       onCompleted(data) {
         setToastState({ open: true, message: data.createAttendance, type: 'success' });
+        handleCloseCourseModal();
       },
       onError() {
         setToastState({ open: true, message: 'Error :(', type: 'error' });
       },
     })
   }
+
+  const onClickCourseButton = (course: string) => {
+    createAttendance({ course, date: coursesModalState.date, enrollmentId: coursesModalState.enrollmentId, studentId: coursesModalState.studentId })
+  }
+
+  const onCheckBoxClick = (row: any, date: string) => {
+    const { id: studentId, enrollments } = row;
+    const [enrollment] = enrollments;
+    const { id: enrollmentId } = enrollment;
+    const today = moment().format('dddd');
+    const coursesToday = enrollment.courses.filter((course: any) => course.days.includes(capitalizeFirstLetter(today)));
+    if (enrollment.courses.length > 1) {
+      setCoursesModalState({ open: true, courses: coursesToday.map((course: any) => course.name), date, enrollmentId, studentId });
+    } else {
+      createAttendance({ studentId, enrollmentId, date, course: coursesToday[0].name });
+    }
+  };
+
 
   const columns = useMemo(() => {
     const columnsData: GridColDef[] = [
@@ -107,16 +125,16 @@ const Students = () => {
         renderCell: ({ row }) => (
           generateDaysOfWeek().map((element) => (
             <Label
-            key={element.dayAbbreviation}
-            labelPlacement='start'
-            label={element.dayAbbreviation}
-            control={
-              <Checkbox
-              onClick={() => onCheckBoxClick(row, element.formattedDate)}
-              // @ts-ignore
-              checked={!!row?.attendances?.find(el => el.date === element.formattedDate)}
-              />
-            }
+              key={element.dayAbbreviation}
+              labelPlacement='start'
+              label={element.dayAbbreviation}
+              control={
+                <Checkbox
+                  onClick={() => onCheckBoxClick(row, element.formattedDate)}
+                  // @ts-ignore
+                  checked={!!row?.attendances?.find(el => el.date === element.formattedDate)}
+                />
+              }
             />
           ))
         )
@@ -126,11 +144,11 @@ const Students = () => {
         headerName: 'Activo',
         type: 'string',
         width: 100,
-        valueFormatter: (active) => active ? 'Activo' : 'Desactivado'
+        valueFormatter: (active: any) => active ? 'Activo' : 'Desactivado'
       },
     ];
     return columnsData
-  }, []);
+  }, [])
 
   const handleAdd = () => navigate('/dashboard/nuevo-alumno');
   const handleEdit = (studentId: string) => navigate(`/dashboard/editar-alumno/${studentId}`);
@@ -149,6 +167,7 @@ const Students = () => {
   const handleOpenEnrollment = () => setOpenEnrollment(false);
   const toggleDrawer = () => setOpenDrawer(currState => !currState);
   const handleClose = () => setToastState({ open: false, message: '', type: undefined });
+  const handleCloseCourseModal = () => setCoursesModalState({ open: false, courses: [], date: '', enrollmentId: '', studentId: '' });
 
   const onOkBtn = (reason: string) => {
     deleteStudentMutation({
@@ -265,18 +284,21 @@ const Students = () => {
         onClose={onCloseModal}
         onOkBtn={onOkBtn}
       />
-      {/* <ConfirmationModal
-        open={modalState.isOpen}
-        success={modalState.success}
-        title={modalState.title}
-        description={modalState.description}
-        handleClose={() => setModalState({ description: '', isOpen: false, title: '', success: false })}
-      /> */}
       <EnrollStudent
         isOpen={openEnrollment}
         onClose={handleOpenEnrollment}
         studentId={studentIdSelected as string}
       />
+      <Dialog open={coursesModalState.open} onClose={handleCloseCourseModal}>
+        <DialogTitle>Selecciona el curso</DialogTitle>
+        <DialogContent>
+          <ButtonGroup>
+            {coursesModalState.courses.map(course => (
+              <Button key={course} onClick={() => onClickCourseButton(course)}>{course}</Button>
+            ))}
+          </ButtonGroup>
+        </DialogContent>
+      </Dialog>
       <Toast open={toastState.open} message={toastState.message} type={toastState.type} onClose={handleClose} />
     </Container>
   )
