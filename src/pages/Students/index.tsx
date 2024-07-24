@@ -1,15 +1,28 @@
 import { useEffect, useMemo, useState } from 'react'
-import { DataGrid, GridColDef, GridRowId, GridRowParams, GridRowSelectionModel, GridToolbarQuickFilter } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel, GridToolbarQuickFilter } from '@mui/x-data-grid';
+import { AlertColor, Box, Button, ButtonGroup, Checkbox, Dialog, DialogContent, DialogTitle, Grid } from '@mui/material';
 import { useMutation, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Grid } from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
+import moment from 'moment';
 
-import { PageLoader, Error, Title, DeleteStudentModal, Modal as ConfirmationModal, EnrollStudent, DrawerFilter } from '../../components';
-import { DELETE_STUDENT, GET_STUDENTS } from '../../queries';
-import { Container } from './styles';
-import { ModalState } from '../NewStudent/types';
+import { PageLoader, Error, Title, DeleteStudentModal, EnrollStudent, DrawerFilter, Toast } from '../../components';
+import { CREATE_ATTENDANCE, DELETE_STUDENT, GET_STUDENTS } from '../../queries';
+import { Container, Label } from './styles';
 import { daysToSpanish } from '../NewStudent/constants';
+import { capitalizeFirstLetter } from '../../utils';
+
+const generateDaysOfWeek = () => {
+  const startOfWeek = moment().startOf('week');
+  const days = [];
+  for (let i = 0; i < 6; i++) {
+    const date = startOfWeek.clone().add(i, 'day');
+    const formattedDate = date.format('DD/MM/YYYY');
+    const dayAbbreviation = capitalizeFirstLetter(date.format('ddd')).slice(0, -1);
+    days.push({ formattedDate, dayAbbreviation });
+  }
+  return days;
+}
 
 type Filters = { profesor: string; class: string; time: string; days: string[] };
 
@@ -31,17 +44,56 @@ const Students = () => {
     refetchQueries: ['GetStudents'],
     context: { headers: { authorization } },
   });
+  const [createAttendanceMutation] = useMutation(CREATE_ATTENDANCE, {
+    refetchQueries: ['GetStudents'],
+    fetchPolicy: 'network-only',
+    context: { headers: { authorization } },
+  });
+
   const [studentIdSelected, setStudentIdSelected] = useState<GridRowId>();
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [modalState, setModalState] = useState<ModalState>({ title: '', description: '', isOpen: false, success: false });
   const [openEnrollment, setOpenEnrollment] = useState<boolean>();
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
   const [filters, setFilters] = useState<Filters>({ profesor: '', class: '', time: '', days: [] });
   const [students, setStudents] = useState(data?.getStudents?.students || []);
+  const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '' });
+  const [coursesModalState, setCoursesModalState] = useState<
+    { open: boolean, courses: string[], date: string, studentId: string, enrollmentId: string }
+  >({ open: false, courses: [], date: '', enrollmentId: '', studentId: '' });
 
-  const handleFilters = (type: string, value: string) => {
-    setFilters(currValue => ({ ...currValue, [type]: value }));
+
+  const handleFilters = (type: string, value: string) => setFilters(currValue => ({ ...currValue, [type]: value }));
+
+  const createAttendance = ({ studentId, enrollmentId, date, course }: { studentId: string; enrollmentId: string; date: string; course: string }) => {
+    createAttendanceMutation({
+      variables: { input: { studentId, enrollmentId, date, course } },
+      onCompleted(data) {
+        setToastState({ open: true, message: data.createAttendance, type: 'success' });
+        handleCloseCourseModal();
+      },
+      onError() {
+        setToastState({ open: true, message: 'Error :(', type: 'error' });
+      },
+    })
   }
+
+  const onClickCourseButton = (course: string) => {
+    createAttendance({ course, date: coursesModalState.date, enrollmentId: coursesModalState.enrollmentId, studentId: coursesModalState.studentId })
+  }
+
+  const onCheckBoxClick = (row: any, date: string) => {
+    const { id: studentId, enrollments } = row;
+    const [enrollment] = enrollments;
+    const { id: enrollmentId } = enrollment;
+    const today = moment().format('dddd');
+    const coursesToday = enrollment.courses.filter((course: any) => course.days.includes(capitalizeFirstLetter(today)));
+    if (enrollment.courses.length > 1) {
+      setCoursesModalState({ open: true, courses: coursesToday.map((course: any) => course.name), date, enrollmentId, studentId });
+    } else {
+      createAttendance({ studentId, enrollmentId, date, course: coursesToday[0].name });
+    }
+  };
+
 
   const columns = useMemo(() => {
     const columnsData: GridColDef[] = [
@@ -61,25 +113,45 @@ const Students = () => {
         field: 'enrollments',
         headerName: 'Inscrito/Periodo',
         type: 'string',
-        width: 160,
-        valueFormatter: (enrollments) => {
-          // @ts-ignore
-          return enrollments.length > 0 ? enrollments[0].period : 'No inscrito';
-        }
+        width: 120,
+        // @ts-ignore
+        valueFormatter: (enrollments) => enrollments?.length > 0 ? enrollments.map(enrollment => enrollment.courses.map(el => el.name).join(' / ')) : '',
+      },
+      {
+        field: '',
+        headerName: 'Asistencia',
+        width: 380,
+        disableColumnMenu: true,
+        renderCell: ({ row }) => (
+          generateDaysOfWeek().map((element) => (
+            <Label
+              key={element.dayAbbreviation}
+              labelPlacement='start'
+              label={element.dayAbbreviation}
+              control={
+                <Checkbox
+                  onClick={() => onCheckBoxClick(row, element.formattedDate)}
+                  // @ts-ignore
+                  checked={!!row?.attendances?.find(el => el.date === element.formattedDate)}
+                />
+              }
+            />
+          ))
+        )
       },
       {
         field: 'active',
         headerName: 'Activo',
         type: 'string',
         width: 100,
-        valueFormatter: (active) => active ? 'Activo' : 'Desactivado'
-      }
+        valueFormatter: (active: any) => active ? 'Activo' : 'Desactivado'
+      },
     ];
     return columnsData
-  }, []);
+  }, [])
 
   const handleAdd = () => navigate('/dashboard/nuevo-alumno');
-  const onRowClick = (params: GridRowParams) => navigate(`/dashboard/editar-alumno/${params.id}`);
+  const handleEdit = (studentId: string) => navigate(`/dashboard/editar-alumno/${studentId}`);
 
   const onRowSelectionModelChange = (rowSelectionModel: GridRowSelectionModel) => {
     const [studentId] = rowSelectionModel;
@@ -94,6 +166,8 @@ const Students = () => {
   const onCloseModal = () => setOpenModal(false);
   const handleOpenEnrollment = () => setOpenEnrollment(false);
   const toggleDrawer = () => setOpenDrawer(currState => !currState);
+  const handleClose = () => setToastState({ open: false, message: '', type: undefined });
+  const handleCloseCourseModal = () => setCoursesModalState({ open: false, courses: [], date: '', enrollmentId: '', studentId: '' });
 
   const onOkBtn = (reason: string) => {
     deleteStudentMutation({
@@ -101,11 +175,11 @@ const Students = () => {
       onCompleted: (response) => {
         if (response.deleteStudent) {
           onCloseModal();
-          setModalState({ description: 'El alumno a sido desactivado exitosamente', isOpen: true, title: 'Alumno desactivado', success: true });
+          setToastState({ message: 'Alumno desactivado', open: true, type: 'success' });
         }
       },
-      onError(error) {
-        setModalState({ description: error?.message, isOpen: true, title: 'Ups... algo salio mal', success: false });
+      onError() {
+        setToastState({ message: 'Algo salio mal', open: true, type: 'warning' });
       },
     });
   };
@@ -164,6 +238,9 @@ const Students = () => {
           <Button fullWidth variant='contained' color='success' onClick={() => setOpenEnrollment(true)} disabled={!studentIdSelected}>Inscribir</Button>
         </Grid>
         <Grid item sm={2}>
+          <Button fullWidth variant='contained' color='info' onClick={() => handleEdit(studentIdSelected as string)} disabled={!studentIdSelected}>Editar</Button>
+        </Grid>
+        <Grid item sm={2}>
           <Button fullWidth variant='contained' color='secondary' onClick={onDeleteBtn} disabled={!studentIdSelected}>Eliminar</Button>
         </Grid>
         <Grid item sm={1} onClick={toggleDrawer} justifyContent='flex-end'>
@@ -183,9 +260,9 @@ const Students = () => {
       ) : (
         <DataGrid
           disableMultipleRowSelection
+          disableRowSelectionOnClick
           rows={studentsData}
           columns={columns}
-          onRowClick={onRowClick}
           onRowSelectionModelChange={onRowSelectionModelChange}
           initialState={{
             pagination: {
@@ -207,18 +284,22 @@ const Students = () => {
         onClose={onCloseModal}
         onOkBtn={onOkBtn}
       />
-      <ConfirmationModal
-        open={modalState.isOpen}
-        success={modalState.success}
-        title={modalState.title}
-        description={modalState.description}
-        handleClose={() => setModalState({ description: '', isOpen: false, title: '', success: false })}
-      />
       <EnrollStudent
         isOpen={openEnrollment}
         onClose={handleOpenEnrollment}
         studentId={studentIdSelected as string}
       />
+      <Dialog open={coursesModalState.open} onClose={handleCloseCourseModal}>
+        <DialogTitle>Selecciona el curso</DialogTitle>
+        <DialogContent>
+          <ButtonGroup>
+            {coursesModalState.courses.map(course => (
+              <Button key={course} onClick={() => onClickCourseButton(course)}>{course}</Button>
+            ))}
+          </ButtonGroup>
+        </DialogContent>
+      </Dialog>
+      <Toast open={toastState.open} message={toastState.message} type={toastState.type} onClose={handleClose} />
     </Container>
   )
 }

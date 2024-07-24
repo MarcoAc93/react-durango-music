@@ -2,7 +2,6 @@ import { styled } from '@mui/system';
 import { Link, useLocation } from 'react-router-dom';
 import { ListItem, ListItemButton, ListItemIcon, List } from '@mui/material';
 import StudentsIcon from '@mui/icons-material/Person';
-import GroupsIcon from '@mui/icons-material/Groups';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const drawerWidth = 150;
@@ -12,11 +11,6 @@ const MenuArray = [
     text: 'Alumnos',
     Component: <StudentsIcon fontSize='large' color='primary' />,
     url: '/dashboard'
-  },
-  {
-    text: 'Asistencias',
-    Component: <GroupsIcon fontSize='large' color='primary' />,
-    url: '/dashboard/asistencias'
   },
   {
     text: 'Pagos',
