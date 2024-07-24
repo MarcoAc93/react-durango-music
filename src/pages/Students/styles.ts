@@ -1,4 +1,4 @@
-import { styled } from "@mui/material";
+import { FormControlLabel, styled } from "@mui/material";
 
 export const Container = styled('div')({
   display: 'flex',
@@ -16,3 +16,11 @@ export const ControlContainer = styled('div')({
   display: 'flex',
   gap: 8
 });
+
+export const Label = styled(FormControlLabel)(({
+  marginLeft: 0,
+  '.MuiButtonBase-root': {
+    paddingLeft: 0,
+    paddingRight: 20
+  }
+}));

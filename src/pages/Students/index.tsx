@@ -1,17 +1,28 @@
 import { useEffect, useMemo, useState } from 'react'
-import { DataGrid, GridColDef, GridRowId, GridRowParams, GridRowSelectionModel, GridToolbarQuickFilter } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId, GridRowSelectionModel, GridToolbarQuickFilter } from '@mui/x-data-grid';
 import { useMutation, useQuery } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { AlertColor, Box, Button, Checkbox, Grid } from '@mui/material';
 import TuneIcon from '@mui/icons-material/Tune';
+import moment from 'moment';
 
-import { PageLoader, Error, Title, DeleteStudentModal, Modal as ConfirmationModal, EnrollStudent, DrawerFilter, Toast } from '../../components';
+import { PageLoader, Error, Title, DeleteStudentModal, EnrollStudent, DrawerFilter, Toast } from '../../components';
 import { CREATE_ATTENDANCE, DELETE_STUDENT, GET_STUDENTS } from '../../queries';
-import { Container } from './styles';
-import { ModalState } from '../NewStudent/types';
+import { Container, Label } from './styles';
 import { daysToSpanish } from '../NewStudent/constants';
-import { generateDaysOfWeek } from '../Attendance';
-import { Label } from '../Attendance/styles';
+import { capitalizeFirstLetter } from '../../utils';
+
+const generateDaysOfWeek = () => {
+  const startOfWeek = moment().startOf('week');
+  const days = [];
+  for (let i = 0; i < 6; i++) {
+    const date = startOfWeek.clone().add(i, 'day');
+    const formattedDate = date.format('DD/MM/YYYY');
+    const dayAbbreviation = capitalizeFirstLetter(date.format('ddd')).slice(0, -1);
+    days.push({ formattedDate, dayAbbreviation });
+  }
+  return days;
+}
 
 type Filters = { profesor: string; class: string; time: string; days: string[] };
 
@@ -65,7 +76,6 @@ const Students = () => {
       },
     })
   }
-  console.log(generateDaysOfWeek());
 
   const columns = useMemo(() => {
     const columnsData: GridColDef[] = [
