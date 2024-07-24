@@ -38,6 +38,7 @@ export const GET_STUDENTS = gql`
           name
         }
         enrollments {
+          id
           payed
           active
           courses {
@@ -48,6 +49,11 @@ export const GET_STUDENTS = gql`
           }
           period
           scholarship
+        }
+        attendances {
+          _id
+          date
+          enrollmentId
         }
       }
     }

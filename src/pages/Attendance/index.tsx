@@ -13,7 +13,7 @@ import { PROFESORS } from '../NewStudent/constants';
 import { CREATE_ATTENDANCE, GET_STUDENTS_BY_PROFESOR } from '../../queries';
 import { capitalizeFirstLetter } from '../../utils';
 
-const generateDaysOfWeek = () => {
+export const generateDaysOfWeek = () => {
   const startOfWeek = moment().startOf('week');
   const days = [];
   for (let i = 0; i < 6; i++) {
