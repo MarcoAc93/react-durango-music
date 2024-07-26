@@ -88,7 +88,7 @@ const Students = () => {
     const selectedDate = capitalizeFirstLetter(moment(date, 'DD/MM/YYYY').format('dddd'));
     const coursesToday = enrollment.courses.filter((course: any) => course.days.some((el: string) => el === selectedDate));
     if (coursesToday.length === 0) {
-      setToastState({ open: true, message: 'No se puede registrar asistencia de dia anterior', type: 'warning' })
+      setToastState({ open: true, message: 'No se puede registrar asistencia de otro día', type: 'warning' })
     } else {
       if (enrollment.courses.length >= 2) {
         const courses = coursesToday.map((course: any) => course.name);
