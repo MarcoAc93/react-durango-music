@@ -54,6 +54,7 @@ export const GET_STUDENTS = gql`
           _id
           date
           enrollmentId
+          course
         }
       }
     }

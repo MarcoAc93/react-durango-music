@@ -58,8 +58,8 @@ const Students = () => {
   const [students, setStudents] = useState(data?.getStudents?.students || []);
   const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '' });
   const [coursesModalState, setCoursesModalState] = useState<
-    { open: boolean, courses: string[], date: string, studentId: string, enrollmentId: string }
-  >({ open: false, courses: [], date: '', enrollmentId: '', studentId: '' });
+    { open: boolean, courses: string[], date: string, studentId: string, enrollmentId: string, attendances: any[] }
+  >({ open: false, courses: [], date: '', enrollmentId: '', studentId: '', attendances: [] });
 
 
   const handleFilters = (type: string, value: string) => setFilters(currValue => ({ ...currValue, [type]: value }));
@@ -85,12 +85,18 @@ const Students = () => {
     const { id: studentId, enrollments } = row;
     const [enrollment] = enrollments;
     const { id: enrollmentId } = enrollment;
-    const today = moment().format('dddd');
-    const coursesToday = enrollment.courses.filter((course: any) => course.days.includes(capitalizeFirstLetter(today)));
-    if (enrollment.courses.length > 1) {
-      setCoursesModalState({ open: true, courses: coursesToday.map((course: any) => course.name), date, enrollmentId, studentId });
+    const selectedDate = capitalizeFirstLetter(moment(date, 'DD/MM/YYYY').format('dddd'));
+    const coursesToday = enrollment.courses.filter((course: any) => course.days.some((el: string) => el === selectedDate));
+    if (coursesToday.length === 0) {
+      setToastState({ open: true, message: 'No se puede registrar asistencia de dia anterior', type: 'warning' })
     } else {
-      createAttendance({ studentId, enrollmentId, date, course: coursesToday[0].name });
+      if (enrollment.courses.length >= 2) {
+        const courses = coursesToday.map((course: any) => course.name);
+        const { attendances } = row;
+        setCoursesModalState({ open: true, courses, date, enrollmentId, studentId, attendances });
+      } else {
+        createAttendance({ studentId, enrollmentId, date, course: coursesToday[0].name });
+      }
     }
   };
 
@@ -167,7 +173,7 @@ const Students = () => {
   const handleOpenEnrollment = () => setOpenEnrollment(false);
   const toggleDrawer = () => setOpenDrawer(currState => !currState);
   const handleClose = () => setToastState({ open: false, message: '', type: undefined });
-  const handleCloseCourseModal = () => setCoursesModalState({ open: false, courses: [], date: '', enrollmentId: '', studentId: '' });
+  const handleCloseCourseModal = () => setCoursesModalState({ open: false, courses: [], date: '', enrollmentId: '', studentId: '', attendances: [] });
 
   const onOkBtn = (reason: string) => {
     deleteStudentMutation({
@@ -294,7 +300,13 @@ const Students = () => {
         <DialogContent>
           <ButtonGroup>
             {coursesModalState.courses.map(course => (
-              <Button key={course} onClick={() => onClickCourseButton(course)}>{course}</Button>
+              <Button
+                key={course}
+                onClick={() => onClickCourseButton(course)}
+                variant={coursesModalState.attendances.some((e: any) => e.course === course) ? 'contained' : 'outlined'}
+              >
+                {course}
+              </Button>
             ))}
           </ButtonGroup>
         </DialogContent>
