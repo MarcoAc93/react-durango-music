@@ -173,7 +173,7 @@ export const CREATE_ATTENDANCE = gql`
   mutation CreateAttendance($input: CreateAttendanceInput!) {
     createAttendance(input: $input)
   }
-`
+`;
 
 export const GET_ATTENDANCES = gql`
   query GetAttendances {
@@ -186,4 +186,18 @@ export const GET_ATTENDANCES = gql`
       }
     }
   }
-`
+`;
+
+export const GET_TOTAL_STUDETS_PER_COURSE = gql`
+  query GetFreeSpaces($input: FreeSpacesInput!) {
+    getFreeSpaces(input: $input) {
+      totalStudents
+      course {
+        time
+        profesor
+        name
+        days
+      }
+    }
+  }
+`;

@@ -8,6 +8,7 @@ import Students from './pages/Students';
 import NewStudent from './pages/NewStudent';
 import Attendances from './pages/Attendances';
 import Payments from './pages/Payments';
+import FreeSpaces from './pages/FreeSpaces';
 moment.locale('es', { week: { dow: 1 } });
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
           <Route path='/dashboard/nuevo-alumno' element={<NewStudent />} />
           <Route path='/dashboard/editar-alumno/:studentId' element={<NewStudent />} />
           <Route path='/dashboard/asistencias' element={<Attendances />} />
+          <Route path='/dashboard/asistencias/espacios-libres/' element={<FreeSpaces />} />
           <Route path='pagos' element={<Payments />} />
         </Route>
       </Routes>

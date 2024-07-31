@@ -24,7 +24,7 @@ const generateDaysOfWeek = () => {
   return days;
 }
 
-type Filters = { profesor: string; class: string; time: string; days: string[] };
+export type Filters = { profesor: string; class: string; time: string; days: string[] };
 
 export const QuickSearchToolbar = () => {
   return (
