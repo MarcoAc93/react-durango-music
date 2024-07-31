@@ -70,7 +70,8 @@ const EnrollmentForm = ({ studentId, onCancel }: Props) => {
             amount: Number(values.amount),
             firstMonthlyPayment: Number(values.firstMonthlyPayment),
             scholarship: 0,
-            courses: values.courses
+            courses: values.courses,
+            paymentMethod: 'efectivo'
           },
         },
         onCompleted(data) {
