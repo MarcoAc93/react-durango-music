@@ -100,8 +100,12 @@ const Students = () => {
       {
         field: 'name',
         headerName: 'Nombre',
+        width: 100,
+      },
+      {
+        field: 'lastName',
+        headerName: 'Apellido',
         width: 150,
-        renderCell: (student: any) => `${student.row.name} ${student.row.lastName}`,
       },
       {
         field: 'cellphone',

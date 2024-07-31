@@ -174,3 +174,16 @@ export const CREATE_ATTENDANCE = gql`
     createAttendance(input: $input)
   }
 `
+
+export const GET_ATTENDANCES = gql`
+  query GetAttendances {
+    getAttendances {
+      attendances {
+        count
+        course
+        studentName
+        dates
+      }
+    }
+  }
+`

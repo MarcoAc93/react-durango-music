@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ListItem, ListItemButton, ListItemIcon, List } from '@mui/material';
 import StudentsIcon from '@mui/icons-material/Person';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CheckBox from '@mui/icons-material/CheckBoxOutlined';
 
 const drawerWidth = 150;
 
@@ -11,6 +12,11 @@ const MenuArray = [
     text: 'Alumnos',
     Component: <StudentsIcon fontSize='large' color='primary' />,
     url: '/dashboard'
+  },
+  {
+    text: 'Asistencias',
+    Component: <CheckBox fontSize='large' color='primary' />,
+    url: '/dashboard/asistencias'
   },
   {
     text: 'Pagos',

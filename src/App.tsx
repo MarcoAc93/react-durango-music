@@ -6,6 +6,7 @@ import { Dashboard } from "./components";
 import Login from "./pages/Login";
 import Students from './pages/Students';
 import NewStudent from './pages/NewStudent';
+import Attendances from './pages/Attendances';
 import Payments from './pages/Payments';
 moment.locale('es', { week: { dow: 1 } });
 
@@ -18,6 +19,7 @@ const App = () => {
           <Route path='' element={<Students />} />
           <Route path='/dashboard/nuevo-alumno' element={<NewStudent />} />
           <Route path='/dashboard/editar-alumno/:studentId' element={<NewStudent />} />
+          <Route path='/dashboard/asistencias' element={<Attendances />} />
           <Route path='pagos' element={<Payments />} />
         </Route>
       </Routes>
