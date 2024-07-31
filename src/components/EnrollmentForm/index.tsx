@@ -37,9 +37,10 @@ const initialValuesEnrollment: FormValuesEnrollment = {
 
 type Props = {
   studentId: string;
+  onCancel?: () => void;
 }
 
-const EnrollmentForm = ({ studentId }: Props) => {
+const EnrollmentForm = ({ studentId, onCancel }: Props) => {
   const isMobile = useMediaQuery('sm');
   const authorization = localStorage.getItem('token');
   const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '', type: undefined });
@@ -78,7 +79,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
             const ticketInfo = [
               {
                 quantity: 1,
-                concept: 'Inscripcion',
+                concept: Number(values.amount) < 350 ? 'Inscripcion / parcialidad' : 'Inscripcion',
                 price: Number(values.amount),
                 net: 1 * Number(values.amount)
               }
@@ -275,7 +276,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
             <Grid item xs={12} md={3}>
               <FormControl fullWidth>
                 <TextField
-                  label='Cantidad de inscripción'
+                  label='Cantidad de inscripción: $350'
                   fullWidth
                   name='amount'
                   onChange={handleChange}
@@ -298,7 +299,7 @@ const EnrollmentForm = ({ studentId }: Props) => {
             </Grid>
           </Grid>
           <DialogActions>
-            <Button variant='contained' color='secondary'>
+            <Button variant='contained' color='secondary' onClick={onCancel}>
               Cancelar
             </Button>
             <LoadingButton autoFocus variant='contained' color='primary' type='submit' loading={loading} disabled={!isValid}>

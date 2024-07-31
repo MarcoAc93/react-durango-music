@@ -24,7 +24,7 @@ const generateDaysOfWeek = () => {
   return days;
 }
 
-type Filters = { profesor: string; class: string; time: string; days: string[] };
+export type Filters = { profesor: string; class: string; time: string; days: string[] };
 
 export const QuickSearchToolbar = () => {
   return (
@@ -58,8 +58,8 @@ const Students = () => {
   const [students, setStudents] = useState(data?.getStudents?.students || []);
   const [toastState, setToastState] = useState<{ open: boolean, message: string, type?: AlertColor }>({ open: false, message: '' });
   const [coursesModalState, setCoursesModalState] = useState<
-    { open: boolean, courses: string[], date: string, studentId: string, enrollmentId: string }
-  >({ open: false, courses: [], date: '', enrollmentId: '', studentId: '' });
+    { open: boolean, courses: string[], date: string, studentId: string, enrollmentId: string, attendances: any[] }
+  >({ open: false, courses: [], date: '', enrollmentId: '', studentId: '', attendances: [] });
 
 
   const handleFilters = (type: string, value: string) => setFilters(currValue => ({ ...currValue, [type]: value }));
@@ -85,12 +85,12 @@ const Students = () => {
     const { id: studentId, enrollments } = row;
     const [enrollment] = enrollments;
     const { id: enrollmentId } = enrollment;
-    const today = moment().format('dddd');
-    const coursesToday = enrollment.courses.filter((course: any) => course.days.includes(capitalizeFirstLetter(today)));
-    if (enrollment.courses.length > 1) {
-      setCoursesModalState({ open: true, courses: coursesToday.map((course: any) => course.name), date, enrollmentId, studentId });
+    if (enrollment.courses.length >= 2) {
+      const courses = enrollment.courses.map((course: any) => course.name);
+      const { attendances } = row;
+      setCoursesModalState({ open: true, courses, date, enrollmentId, studentId, attendances });
     } else {
-      createAttendance({ studentId, enrollmentId, date, course: coursesToday[0].name });
+      createAttendance({ studentId, enrollmentId, date, course: enrollment.courses[0].name });
     }
   };
 
@@ -100,8 +100,12 @@ const Students = () => {
       {
         field: 'name',
         headerName: 'Nombre',
+        width: 100,
+      },
+      {
+        field: 'lastName',
+        headerName: 'Apellido',
         width: 150,
-        renderCell: (student: any) => `${student.row.name} ${student.row.lastName}`,
       },
       {
         field: 'cellphone',
@@ -167,7 +171,7 @@ const Students = () => {
   const handleOpenEnrollment = () => setOpenEnrollment(false);
   const toggleDrawer = () => setOpenDrawer(currState => !currState);
   const handleClose = () => setToastState({ open: false, message: '', type: undefined });
-  const handleCloseCourseModal = () => setCoursesModalState({ open: false, courses: [], date: '', enrollmentId: '', studentId: '' });
+  const handleCloseCourseModal = () => setCoursesModalState({ open: false, courses: [], date: '', enrollmentId: '', studentId: '', attendances: [] });
 
   const onOkBtn = (reason: string) => {
     deleteStudentMutation({
@@ -294,7 +298,13 @@ const Students = () => {
         <DialogContent>
           <ButtonGroup>
             {coursesModalState.courses.map(course => (
-              <Button key={course} onClick={() => onClickCourseButton(course)}>{course}</Button>
+              <Button
+                key={course}
+                onClick={() => onClickCourseButton(course)}
+                variant={coursesModalState.attendances.some((e: any) => e.course === course && coursesModalState.date === e.date) ? 'contained' : 'outlined'}
+              >
+                {course}
+              </Button>
             ))}
           </ButtonGroup>
         </DialogContent>

@@ -9,6 +9,7 @@ import EnrollmentForm from "./EnrollmentForm";
 import Toast from "./Toast";
 import Ticket from "./Ticket";
 import DrawerFilter from "./DrawerFilter";
+import AttendanceRow from "./AttendanceRow";
 
 export {
   Dashboard,
@@ -21,5 +22,6 @@ export {
   EnrollmentForm,
   Toast,
   Ticket,
-  DrawerFilter
+  DrawerFilter,
+  AttendanceRow,
 }

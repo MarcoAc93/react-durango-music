@@ -301,7 +301,7 @@ const NewStudent = () => {
       </Formik>
 
       {!studentId && (
-        <EnrollmentForm studentId={newStudentId as string} />
+        <EnrollmentForm studentId={newStudentId as string} onCancel={handleGoBack} />
       )}
       <Toast open={toastState.open} message={toastState.message} type={toastState.type} onClose={handleClose} />
     </>

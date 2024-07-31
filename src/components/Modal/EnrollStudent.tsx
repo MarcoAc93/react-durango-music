@@ -27,7 +27,7 @@ const EnrollStudent = ({ onClose, isOpen = false, studentId }: Props) => (
       <Close />
     </IconButton>
     <DialogContent dividers>
-      <EnrollmentForm studentId={studentId} />
+      <EnrollmentForm studentId={studentId} onCancel={onClose} />
     </DialogContent>
   </Dialog>
 );
