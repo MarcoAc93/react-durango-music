@@ -85,18 +85,12 @@ const Students = () => {
     const { id: studentId, enrollments } = row;
     const [enrollment] = enrollments;
     const { id: enrollmentId } = enrollment;
-    const selectedDate = capitalizeFirstLetter(moment(date, 'DD/MM/YYYY').format('dddd'));
-    const coursesToday = enrollment.courses.filter((course: any) => course.days.some((el: string) => el === selectedDate));
-    if (coursesToday.length === 0) {
-      setToastState({ open: true, message: 'No se puede registrar asistencia de otro día', type: 'warning' })
+    if (enrollment.courses.length >= 2) {
+      const courses = enrollment.courses.map((course: any) => course.name);
+      const { attendances } = row;
+      setCoursesModalState({ open: true, courses, date, enrollmentId, studentId, attendances });
     } else {
-      if (enrollment.courses.length >= 2) {
-        const courses = coursesToday.map((course: any) => course.name);
-        const { attendances } = row;
-        setCoursesModalState({ open: true, courses, date, enrollmentId, studentId, attendances });
-      } else {
-        createAttendance({ studentId, enrollmentId, date, course: coursesToday[0].name });
-      }
+      createAttendance({ studentId, enrollmentId, date, course: enrollment.courses[0].name });
     }
   };
 
@@ -303,7 +297,7 @@ const Students = () => {
               <Button
                 key={course}
                 onClick={() => onClickCourseButton(course)}
-                variant={coursesModalState.attendances.some((e: any) => e.course === course) ? 'contained' : 'outlined'}
+                variant={coursesModalState.attendances.some((e: any) => e.course === course && coursesModalState.date === e.date) ? 'contained' : 'outlined'}
               >
                 {course}
               </Button>
